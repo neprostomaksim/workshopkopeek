@@ -1,10 +1,9 @@
-node_modules/
-.next/
-out/
-build/
+/node_modules
+/.next
+/out
+/build
 .DS_Store
 *.pem
 npm-debug.log*
 .env*.local
 next-env.d.ts
-.claude/

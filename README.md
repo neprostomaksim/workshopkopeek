@@ -1,22 +1,72 @@
-# CODING AGENTS: READ THIS FIRST
+# Лендинг воркшопа «Собери своего ИИ-агента»
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+Next.js (App Router) реализация лендинга. Переработанная версия дизайна из
+`../project/Воркшоп ИИ-агенты.dc.html` — с живым hero-визуалом, обратным отсчётом,
+соц-доказательством, bento-раскладкой и анимациями.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+## Запуск
 
-## What you should do — IMPORTANT
+```bash
+cd web
+npm install
+npm run dev
+```
 
-**Read `untitled/project/Воркшоп ИИ-агенты.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+Откройте http://localhost:3000
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+Прод-сборка:
 
-## About the design files
+```bash
+npm run build && npm start
+```
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+## Где что править
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+Весь изменяемый контент — в одном файле: **`lib/config.js`**
+(дата и время, город/площадка, цена, количество мест, ссылки на оплату/Telegram/контакт).
+Обратный отсчёт и прогресс-бар мест считаются из него автоматически.
 
-## Bundle contents
+- Ссылки `paymentUrl`, `telegramUrl`, `contactUrl` пока `"#"` — замените на реальные.
+- `seatsLeft` / `seatsTotal` — управляют бейджем срочности и прогресс-баром.
 
-- `untitled/README.md` — this file
-- `untitled/project/` — the `Собери своего ИИ-агента` project files (HTML prototypes, assets, components)
+## Изображения (плейсхолдеры → реальные фото)
+
+Компонент `components/ImageSlot.jsx` рисует заглушки в двух местах:
+1. Скриншот «вашего рабочего стола» под hero.
+2. Фото спикера в секции «Спикер».
+
+Когда появятся файлы — положите их в `public/` и замените `<ImageSlot .../>` на
+`next/image`:
+
+```jsx
+import Image from "next/image";
+<Image src="/speaker.jpg" alt="Максим Леонов" fill style={{ objectFit: "cover" }} />
+```
+
+## Структура
+
+```
+app/
+  layout.jsx      — шрифты (Montserrat + JetBrains Mono через next/font), метаданные
+  page.jsx        — сборка секций (server component)
+  globals.css     — токены дизайн-системы + все стили
+components/
+  Hero.jsx        — первый экран (client): визуал + отсчёт + соц-доказательство
+  AgentScene.jsx  — CSS/SVG-сцена «рабочий стол с агентами»
+  Countdown.jsx   — живой обратный отсчёт (client)
+  StickyBars.jsx  — sticky-хедер + мобильный бар по скроллу (client)
+  Reveal.jsx      — проявление секций при скролле (client)
+  ImageSlot.jsx   — плейсхолдер под фото
+  icons.jsx       — SVG-иконки (Lucide-стиль)
+  sections/       — Pain, Shift, Program, Format, Speaker, Pricing, Faq, FinalCta, Footer
+lib/config.js     — единая точка правок контента
+```
+
+## Что добавлено по сравнению с исходным прототипом
+
+- **Hero-визуал** вместо пустого плейсхолдера — анимированная сцена с 4 агентами.
+- **Обратный отсчёт** до старта (триггер срочности).
+- **Соц-доказательство** под CTA + **прогресс-бар занятых мест** в блоке цены.
+- **Bento-раскладка** секции «боли» + сводная карточка, крупные номера в программе.
+- **Parallax/pulse** на фоновых бликах, доработанные scroll-reveal и hover-состояния.
+- Всё уважает `prefers-reduced-motion`; контраст текста — от 4.5:1.
