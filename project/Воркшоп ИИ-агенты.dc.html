@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+:root{
+  --bg:#0B0C0E;--bg-2:#101215;--glass:rgba(255,255,255,0.05);--glass-strong:rgba(255,255,255,0.08);
+  --border:rgba(255,255,255,0.10);--text:#F2F4F5;--text-dim:rgba(242,244,245,0.62);
+  --lime:#C6F432;--lime-soft:rgba(198,244,50,0.14);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Montserrat",-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden;}
+a{color:var(--lime);text-decoration:none;}
+a:hover{color:#d9ff5e;}
+p{margin:0;}
+h1,h2,h3{margin:0;letter-spacing:-0.03em;font-weight:700;line-height:1.06;}
+.mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,monospace;font-feature-settings:"tnum";}
+.container{max-width:1120px;margin:0 auto;padding:0 24px;position:relative;z-index:2;}
+.section{padding:128px 0;position:relative;}
+.narrow{max-width:780px;margin:0 auto;}
+.lime{color:var(--lime);}
+.dim{color:var(--text-dim);}
+.eyebrow{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12.5px;letter-spacing:0.24em;text-transform:uppercase;color:var(--lime);font-weight:500;}
+.h1{font-size:clamp(40px,8vw,78px);font-weight:800;}
+.h2{font-size:clamp(28px,4.6vw,46px);font-weight:700;}
+.lead{font-size:clamp(17px,2vw,19px);color:var(--text-dim);line-height:1.62;font-weight:400;}
+.center{text-align:center;}
+.glass{background:var(--glass);backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%);border:1px solid var(--border);border-radius:24px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.14);}
+.glass-strong{background:var(--glass-strong);backdrop-filter:blur(28px) saturate(140%);-webkit-backdrop-filter:blur(28px) saturate(140%);border:1px solid var(--border);border-radius:24px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.14);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-family:inherit;font-size:16px;font-weight:600;padding:15px 26px;border-radius:999px;cursor:pointer;border:1px solid transparent;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;letter-spacing:-0.01em;line-height:1;}
+.btn-primary{background:var(--lime);color:#0B0C0E;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(198,244,50,0.35);color:#0B0C0E;}
+.btn-secondary{background:var(--glass);border:1px solid var(--border);color:var(--text);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);}
+.btn-secondary:hover{transform:translateY(-2px);border-color:rgba(198,244,50,0.4);color:var(--text);}
+.glow{position:absolute;border-radius:50%;filter:blur(120px);opacity:0.35;pointer-events:none;z-index:0;}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.in{opacity:1;transform:none;}
+.ico{width:22px;height:22px;stroke:var(--lime);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none;}
+image-slot{--is-bg:rgba(255,255,255,0.03);}
+/* header */
+.site-header{position:fixed;top:0;left:0;right:0;z-index:80;transform:translateY(-110%);opacity:0;transition:transform .45s ease,opacity .45s ease;}
+.site-header.show{transform:none;opacity:1;}
+.header-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:12px auto;max-width:1120px;padding:10px 12px 10px 22px;border-radius:999px;}
+.header-center{font-size:13px;letter-spacing:0.02em;color:var(--text-dim);white-space:nowrap;}
+.header-center b{color:var(--text);font-weight:500;}
+.logo{font-weight:800;letter-spacing:-0.02em;font-size:17px;}
+/* hero mockup */
+.mock{max-width:960px;margin:60px auto 0;border-radius:22px;overflow:hidden;padding:0;}
+.mock-bar{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--border);}
+.mock-dot{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,0.16);}
+.mock-url{margin-left:14px;font-size:12.5px;color:var(--text-dim);}
+/* pain grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.pain-card{padding:30px 30px 32px;transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease;}
+.pain-card:hover{transform:translateY(-4px);border-color:rgba(198,244,50,0.3);box-shadow:0 0 34px rgba(198,244,50,0.12);}
+.time-tag{font-size:28px;font-weight:700;letter-spacing:-0.02em;color:var(--lime);line-height:1;}
+/* program */
+.prog-stack{display:flex;flex-direction:column;gap:20px;max-width:940px;margin:0 auto;}
+.prog-card{display:grid;grid-template-columns:262px 1fr;gap:36px;padding:34px 40px;align-items:center;transition:border-color .3s ease,box-shadow .3s ease;}
+.prog-card:hover{border-color:rgba(198,244,50,0.24);box-shadow:0 0 30px rgba(198,244,50,0.08);}
+.prog-left{display:flex;flex-direction:column;gap:14px;}
+.prog-num{font-size:15px;font-weight:500;color:var(--text-dim);letter-spacing:0.1em;}
+.prog-name{font-size:23px;font-weight:700;letter-spacing:-0.02em;}
+.logo-tile{width:60px;height:60px;border-radius:16px;overflow:hidden;background:rgba(255,255,255,0.04);border:1px solid var(--border);}
+.icon-tile{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--lime-soft);border:1px solid rgba(198,244,50,0.2);}
+/* how */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.how-card{padding:34px 30px 36px;}
+.icon-badge{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--lime-soft);margin-bottom:22px;}
+/* expert */
+.expert-grid{display:grid;grid-template-columns:0.8fr 1.2fr;gap:56px;align-items:center;}
+.photo-frame{aspect-ratio:4/5;border-radius:24px;overflow:hidden;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,0.14),0 0 60px rgba(198,244,50,0.16);border:1px solid var(--border);}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:32px;}
+.stat{padding:20px 18px;border-radius:18px;}
+.stat b{font-size:21px;font-weight:700;color:var(--lime);letter-spacing:-0.01em;display:block;margin-bottom:4px;}
+/* price */
+.price-card{max-width:620px;margin:0 auto;padding:44px 44px 40px;position:relative;z-index:2;}
+.badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:0.04em;padding:7px 15px;border-radius:999px;background:var(--lime-soft);color:var(--lime);border:1px solid rgba(198,244,50,0.28);text-transform:uppercase;}
+.detail-row{display:flex;align-items:center;gap:14px;font-size:17px;padding:11px 0;}
+.divider{height:1px;background:var(--border);margin:26px 0;}
+.price-num{font-size:clamp(52px,10vw,74px);font-weight:700;letter-spacing:-0.03em;line-height:1;}
+/* faq */
+.faq-list{display:flex;flex-direction:column;gap:14px;max-width:820px;margin:0 auto;}
+.faq-item{padding:6px 26px;overflow:hidden;}
+.faq-head{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0;cursor:pointer;font-size:18px;font-weight:600;letter-spacing:-0.01em;}
+.faq-plus{width:26px;height:26px;flex:none;position:relative;transition:transform .35s ease;color:var(--lime);}
+.faq-plus::before,.faq-plus::after{content:"";position:absolute;background:currentColor;border-radius:2px;top:50%;left:50%;transform:translate(-50%,-50%);}
+.faq-plus::before{width:16px;height:2px;}
+.faq-plus::after{width:2px;height:16px;}
+.faq-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .38s ease;}
+.faq-body.open{grid-template-rows:1fr;}
+.faq-body>div{overflow:hidden;}
+.faq-answer{color:var(--text-dim);font-size:17px;line-height:1.6;padding-bottom:24px;max-width:680px;}
+/* footer */
+.footer{border-top:1px solid var(--border);background:var(--glass);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:44px 0 40px;}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;flex-wrap:wrap;}
+.footer-links{display:flex;gap:26px;font-size:15px;}
+/* mobile bar */
+.mobile-bar{display:none;}
+@media(max-width:767px){
+  .mobile-bar{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:90;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;transform:translateY(130%);transition:transform .4s ease;border-radius:22px 22px 0 0;}
+  .mobile-bar.show{transform:none;}
+  .section{padding:64px 0;}
+  .grid-2,.grid-3{grid-template-columns:1fr;}
+  .prog-card{grid-template-columns:1fr;gap:20px;padding:28px 26px;}
+  .expert-grid{grid-template-columns:1fr;gap:32px;}
+  .header-center{display:none;}
+  .header-bar{padding:9px 9px 9px 18px;}
+  .hero-btns{flex-direction:column;width:100%;}
+  .hero-btns .btn{width:100%;}
+  .stat-row{grid-template-columns:1fr;}
+  .price-card{padding:34px 26px 32px;}
+  .footer-top{flex-direction:column;}
+  .mock{margin-top:44px;}
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 0 0 rgba(198,244,50,0.5);}50%{opacity:.6;transform:scale(.9);box-shadow:0 0 0 6px rgba(198,244,50,0);}}
+@keyframes floatArrow{0%,100%{transform:translateY(0);opacity:.5;}50%{transform:translateY(9px);opacity:1;}}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--lime);animation:pulse 2.4s ease-in-out infinite;flex:none;}
+.scroll-cue{animation:floatArrow 2.2s ease-in-out infinite;}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none;}
+  .pulse-dot,.scroll-cue{animation:none;}
+  html{scroll-behavior:auto;}
+}
+</style>
+</helmet>
+
+<div>
+  <!-- STICKY HEADER -->
+  <header class="site-header {{ headerCls }}">
+    <div class="header-bar glass">
+      <div class="logo"><span class="lime">ИИ</span> Воркшоп</div>
+      <div class="header-center mono">31 июля <span style="opacity:.4">·</span> <b>Минск</b> <span style="opacity:.4">·</span> Пространство «Молоко»</div>
+      <a class="btn btn-primary" href="{{ PAYMENT_URL }}" style="padding:11px 20px;font-size:15px;">Занять место · 65 BYN</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section style="position:relative;padding:150px 0 96px;overflow:hidden;">
+    <div class="glow" style="width:640px;height:640px;top:-160px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(198,244,50,0.5),transparent 70%);"></div>
+    <div class="glow" style="width:560px;height:560px;bottom:-180px;left:6%;background:radial-gradient(circle,rgba(70,110,180,0.45),transparent 70%);opacity:0.3;"></div>
+    <div class="container center" style="display:flex;flex-direction:column;align-items:center;gap:28px;">
+      <div class="glass mono" style="display:inline-flex;align-items:center;gap:10px;padding:9px 18px;border-radius:999px;font-size:13px;color:var(--text-dim);letter-spacing:0.01em;">
+        <span class="pulse-dot"></span>
+        Пятница, 31 июля, 13:30 · Пространство «Молоко», Минск
+      </div>
+      <h1 class="h1" style="max-width:980px;">У предпринимателя всегда не хватает<br>одного — <span class="lime">времени</span></h1>
+      <p class="lead" style="max-width:648px;">За три часа вы соберёте себе команду ИИ-агентов, которые заберут рутину. Руками, на своём ноутбуке. Без единой строчки кода.</p>
+      <div class="hero-btns" style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:6px;">
+        <a class="btn btn-primary" href="{{ PAYMENT_URL }}">Занять место — 65 BYN</a>
+        <button class="btn btn-secondary" onClick="{{ scrollToProgram }}">Что будет на воркшопе</button>
+      </div>
+      <p class="dim" style="font-size:15px;">Группа небольшая — чтобы я успел подойти к каждому.</p>
+
+      <div class="mock glass-strong reveal">
+        <div class="mock-bar">
+          <span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span>
+          <span class="mock-url mono">мои-агенты · рабочий стол</span>
+        </div>
+        <image-slot id="hero-shot" shape="rect" fit="cover" placeholder="Скриншот вашего рабочего стола с агентами — вставьте после воркшопа" style="width:100%;aspect-ratio:16/9;display:block;"></image-slot>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 1 — PAIN -->
+  <section class="section">
+    <div class="container">
+      <div class="reveal" style="max-width:720px;margin:0 0 56px;">
+        <p class="eyebrow">Куда уходит время</p>
+        <h2 class="h2" style="margin-top:18px;">Знакомо?</h2>
+        <p class="lead" style="margin-top:18px;">Каждая из этих задач по отдельности — ерунда. Вместе они съедают рабочую неделю.</p>
+      </div>
+      <div class="grid-2">
+        <div class="pain-card glass reveal">
+          <div class="time-tag mono">~1 час</div>
+          <h3 style="font-size:20px;font-weight:600;margin:16px 0 8px;letter-spacing:-0.02em;">Коммерческое предложение</h3>
+          <p class="dim" style="font-size:16px;">Каждый раз под клиента, каждый раз с нуля.</p>
+        </div>
+        <div class="pain-card glass reveal" style="transition-delay:.08s;">
+          <div class="time-tag mono">~1 час</div>
+          <h3 style="font-size:20px;font-weight:600;margin:16px 0 8px;letter-spacing:-0.02em;">Договор на проверку</h3>
+          <p class="dim" style="font-size:16px;">И то по диагонали — а потом ищешь, где подписал лишнего.</p>
+        </div>
+        <div class="pain-card glass reveal" style="transition-delay:.12s;">
+          <div class="time-tag mono">полгода</div>
+          <h3 style="font-size:20px;font-weight:600;margin:16px 0 8px;letter-spacing:-0.02em;">Регламент для нового сотрудника</h3>
+          <p class="dim" style="font-size:16px;">Лежит в голове. Всё никак не дойдут руки.</p>
+        </div>
+        <div class="pain-card glass reveal" style="transition-delay:.18s;">
+          <div class="time-tag mono">до вечера</div>
+          <h3 style="font-size:20px;font-weight:600;margin:16px 0 8px;letter-spacing:-0.02em;">Письмо партнёру</h3>
+          <p class="dim" style="font-size:16px;">Написать надо аккуратно, поэтому откладывается.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2 — SHIFT -->
+  <section class="section" style="background:var(--bg-2);">
+    <div class="container narrow center">
+      <p class="eyebrow reveal">Главный сдвиг последних двух лет</p>
+      <h2 class="h2 reveal" style="margin-top:20px;">ИИ перестал быть<br>умным поисковиком</h2>
+      <p class="lead reveal" style="margin-top:24px;">Он стал ассистентом, который всегда на связи. У него нет выходных, он не уходит в отпуск и не просит объяснить задачу дважды. Вы формулируете, что нужно, — он делает.</p>
+      <div class="glass-strong reveal" style="margin-top:40px;text-align:left;padding:28px 32px;border-left:3px solid var(--lime);border-radius:20px;">
+        <p style="font-size:18px;line-height:1.6;">Такого ассистента, настроенного под конкретную задачу, называют <span class="lime">агентом</span>. И завести их можно сразу несколько — под разные участки работы.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3 — PROGRAM -->
+  <section class="section" id="program">
+    <div class="container">
+      <div class="reveal" style="max-width:760px;margin:0 0 56px;">
+        <p class="eyebrow">За три часа</p>
+        <h2 class="h2" style="margin-top:18px;">Что вы соберёте своими руками</h2>
+      </div>
+      <div class="prog-stack">
+        <div class="prog-card glass reveal">
+          <div class="prog-left">
+            <div class="logo-tile"><image-slot id="logo-notebooklm" shape="rect" placeholder="NotebookLM" style="width:100%;height:100%;display:block;"></image-slot></div>
+            <div><div class="prog-num mono">01</div><div class="prog-name">NotebookLM</div></div>
+          </div>
+          <p class="dim" style="font-size:17px;">Агент, который работает на ваших данных. Загружаете договоры, регламенты, записи созвонов, базу знаний — и получаете собеседника, который знает вашу компанию и отвечает по вашим документам.</p>
+        </div>
+        <div class="prog-card glass reveal" style="transition-delay:.06s;">
+          <div class="prog-left">
+            <div class="logo-tile"><image-slot id="logo-gemini" shape="rect" placeholder="Gemini" style="width:100%;height:100%;display:block;"></image-slot></div>
+            <div><div class="prog-num mono">02</div><div class="prog-name">Gem-боты в Gemini</div></div>
+          </div>
+          <p class="dim" style="font-size:17px;">Собственные агенты с доступом в интернет. Найти информацию по рынку, посмотреть, что у конкурентов, собрать аналитику к решению. Настроили один раз — пользуетесь каждый день.</p>
+        </div>
+        <div class="prog-card glass reveal" style="transition-delay:.12s;">
+          <div class="prog-left">
+            <div class="icon-tile"><svg class="ico" style="width:26px;height:26px;" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg></div>
+            <div><div class="prog-num mono">03</div><div class="prog-name">Агенты под функции</div></div>
+          </div>
+          <p class="dim" style="font-size:17px;">Маркетинг, копирайтинг, менеджмент. Коммерческое предложение, пост, письмо, регламент — под ваши процессы, а не «универсальный помощник».</p>
+        </div>
+        <div class="prog-card glass reveal" style="transition-delay:.18s;">
+          <div class="prog-left">
+            <div class="icon-tile"><svg class="ico" style="width:26px;height:26px;" viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7z"></path><path d="M12 22V12"></path><path d="m3 7 9 5 9-5"></path></svg></div>
+            <div><div class="prog-num mono">04</div><div class="prog-name">Принцип сборки</div></div>
+          </div>
+          <p class="dim" style="font-size:17px;">Тот самый метод, по которому вы дальше соберёте агента под любую задачу в бизнесе — сами, без меня.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 — HOW -->
+  <section class="section" style="background:var(--bg-2);">
+    <div class="container">
+      <div class="center reveal" style="margin:0 auto 56px;">
+        <p class="eyebrow">Формат</p>
+        <h2 class="h2" style="margin-top:18px;">Это практика, а не лекция</h2>
+      </div>
+      <div class="grid-3">
+        <div class="how-card glass reveal">
+          <div class="icon-badge"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"></rect><line x1="2" y1="20" x2="22" y2="20"></line></svg></div>
+          <h3 style="font-size:19px;font-weight:600;margin-bottom:10px;letter-spacing:-0.02em;">Приходите с ноутбуком</h3>
+          <p class="dim" style="font-size:16px;">Всё делаем в живую, на вашем экране. Уходите с готовыми, настроенными агентами.</p>
+        </div>
+        <div class="how-card glass reveal" style="transition-delay:.08s;">
+          <div class="icon-badge"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></div>
+          <h3 style="font-size:19px;font-weight:600;margin-bottom:10px;letter-spacing:-0.02em;">И с одной задачей</h3>
+          <p class="dim" style="font-size:16px;">Той, что съедает больше всего времени. С неё и начнём — на вашем реальном примере.</p>
+        </div>
+        <div class="how-card glass reveal" style="transition-delay:.16s;">
+          <div class="icon-badge"><svg class="ico" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+          <h3 style="font-size:19px;font-weight:600;margin-bottom:10px;letter-spacing:-0.02em;">Кода не будет</h3>
+          <p class="dim" style="font-size:16px;">Ни строчки. Всё настраивается словами, на русском языке.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5 — EXPERT -->
+  <section class="section">
+    <div class="container">
+      <div class="expert-grid">
+        <div class="photo-frame reveal">
+          <image-slot id="speaker-photo" shape="rect" fit="cover" placeholder="Фото спикера · 4:5" style="width:100%;height:100%;display:block;"></image-slot>
+        </div>
+        <div class="reveal" style="transition-delay:.1s;">
+          <p class="eyebrow">Спикер</p>
+          <h2 class="h2" style="font-size:clamp(30px,4vw,42px);margin-top:16px;">Максим Леонов</h2>
+          <p class="lime" style="font-size:18px;font-weight:600;margin-top:8px;">AI-тренер, автор канала «НЕ просто МАКСИМ»</p>
+          <p class="lead" style="margin-top:22px;">Провожу корпоративные обучения и мастер-классы по ИИ для бизнеса — от банков до аудиторских компаний. Веду сообщество Core M.AI.N. Учу так, чтобы после занятия человек открыл ноутбук и сделал сам.</p>
+          <div class="stat-row">
+            <div class="stat glass"><b class="mono">350+</b><span class="dim" style="font-size:14px;">человек обучено</span></div>
+            <div class="stat glass"><b class="mono">5 лет</b><span class="dim" style="font-size:14px;">в обучении взрослых</span></div>
+            <div class="stat glass"><b>Core M.AI.N</b><span class="dim" style="font-size:14px;">сообщество</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6 — PRICE -->
+  <section class="section" style="overflow:hidden;">
+    <div class="glow" style="width:560px;height:560px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(198,244,50,0.45),transparent 70%);"></div>
+    <div class="container">
+      <div class="price-card glass-strong reveal">
+        <div class="badge">Осталось немного мест</div>
+        <h2 style="font-size:clamp(26px,3.4vw,34px);margin:22px 0 24px;">Воркшоп «Собери своего ИИ-агента»</h2>
+        <div>
+          <div class="detail-row"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span>Пятница, 31 июля</span></div>
+          <div class="detail-row"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span>13:30, 3 часа</span></div>
+          <div class="detail-row"><svg class="ico" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Пространство «Молоко», Минск</span></div>
+          <div class="detail-row"><svg class="ico" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span>Небольшая группа</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="price-num mono">65 BYN</div>
+        <a class="btn btn-primary" href="{{ PAYMENT_URL }}" target="_blank" rel="noopener" style="width:100%;margin-top:26px;font-size:17px;padding:17px;">Оплатить и занять место</a>
+        <p class="dim center" style="font-size:14px;margin-top:16px;">После оплаты я свяжусь с вами и пришлю детали.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7 — FAQ -->
+  <section class="section" style="background:var(--bg-2);">
+    <div class="container">
+      <div class="center reveal" style="margin:0 auto 48px;"><p class="eyebrow">Вопросы</p><h2 class="h2" style="margin-top:16px;">Частые вопросы</h2></div>
+      <div class="faq-list">
+        <sc-for list="{{ faqs }}" as="item" hint-placeholder-count="5">
+          <div class="faq-item glass reveal">
+            <div class="faq-head" onClick="{{ item.toggle }}">
+              <span>{{ item.q }}</span>
+              <span class="faq-plus" style="{{ item.plusStyle }}"></span>
+            </div>
+            <div class="{{ item.bodyClass }}"><div><p class="faq-answer">{{ item.a }}</p></div></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="section center" style="padding:120px 0;">
+    <div class="container narrow reveal" style="display:flex;flex-direction:column;align-items:center;gap:32px;">
+      <h2 class="h2">Время не вернуть.<br>Но можно перестать его терять.</h2>
+      <a class="btn btn-primary" href="{{ PAYMENT_URL }}" style="font-size:17px;padding:17px 32px;">Занять место — 65 BYN</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-top">
+      <div>
+        <div class="logo" style="margin-bottom:8px;"><span class="lime">ИИ</span> Воркшоп</div>
+        <p class="dim" style="font-size:14px;">Воркшоп по ИИ-агентам · Минск, 31 июля</p>
+      </div>
+      <div class="footer-links">
+        <a href="{{ TELEGRAM_URL }}" target="_blank" rel="noopener">Telegram-канал</a>
+        <a href="{{ CONTACT_URL }}" target="_blank" rel="noopener">Написать</a>
+      </div>
+    </div>
+    <div class="container" style="margin-top:28px;"><p class="dim" style="font-size:13px;">© 2026 Максим Леонов</p></div>
+  </footer>
+
+  <!-- MOBILE STICKY BAR -->
+  <div class="mobile-bar glass {{ barCls }}">
+    <span class="mono" style="font-weight:700;font-size:18px;">65 BYN</span>
+    <a class="btn btn-primary" href="{{ PAYMENT_URL }}" style="padding:12px 22px;font-size:15px;">Занять место</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { scrolled: false, heroPassed: false, openFaq: null };
+
+  faqData = [
+    { q: "Я совсем не разбираюсь в технологиях. Потяну?", a: "Да. Это главное условие формата: всё настраивается обычными словами, кода не будет. Если умеете пользоваться браузером и почтой — потянете." },
+    { q: "Что нужно взять с собой?", a: "Ноутбук с зарядкой и одну рабочую задачу, которая отнимает больше всего времени. Всё остальное — на месте." },
+    { q: "Инструменты платные?", a: "Разбираем те, которыми можно пользоваться бесплатно. Если понадобится платная версия — честно скажу, где и зачем." },
+    { q: "Уйду с чем-то готовым или только с конспектом?", a: "С работающими агентами, настроенными под ваши задачи. Конспект — приятное дополнение." },
+    { q: "Будет ли запись?", a: "Нет. Формат живой, всё внимание тем, кто в зале." },
+  ];
+
+  componentDidMount() {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduce) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+      this._io = io;
+    } else {
+      document.querySelectorAll(".reveal").forEach((el) => el.classList.add("in"));
+    }
+    this._onScroll = () => {
+      const y = window.scrollY || window.pageYOffset || 0;
+      const s = y > 80, h = y > 460;
+      if (s !== this.state.scrolled || h !== this.state.heroPassed) {
+        this.setState({ scrolled: s, heroPassed: h });
+      }
+    };
+    window.addEventListener("scroll", this._onScroll, { passive: true });
+    this._onScroll();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this._onScroll);
+    if (this._io) this._io.disconnect();
+  }
+
+  scrollTo(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: el.getBoundingClientRect().top + (window.scrollY || 0) - 72, behavior: reduce ? "auto" : "smooth" });
+  }
+
+  renderVals() {
+    const PAYMENT_URL = "#";
+    const TELEGRAM_URL = "#";
+    const CONTACT_URL = "#";
+    const faqs = this.faqData.map((f, i) => {
+      const isOpen = this.state.openFaq === i;
+      return {
+        q: f.q, a: f.a,
+        bodyClass: "faq-body" + (isOpen ? " open" : ""),
+        plusStyle: isOpen ? "transform:rotate(45deg)" : "transform:rotate(0deg)",
+        toggle: () => this.setState((s) => ({ openFaq: s.openFaq === i ? null : i })),
+      };
+    });
+    return {
+      PAYMENT_URL, TELEGRAM_URL, CONTACT_URL,
+      headerCls: this.state.scrolled ? "show" : "",
+      barCls: this.state.heroPassed ? "show" : "",
+      faqs,
+      scrollToProgram: () => this.scrollTo("program"),
+    };
+  }
+}
+</script>
+</body>
+</html>
