@@ -10,6 +10,7 @@ export default function Pricing() {
     { icon: "calendar", text: site.eventDateLabel },
     { icon: "clock", text: site.eventTimeLabel },
     { icon: "pin", text: `${site.venue}, ${site.city}` },
+    { icon: "laptop", text: "Со своим ноутбуком" },
     { icon: "users", text: "Небольшая группа" },
   ];
 
@@ -30,7 +31,7 @@ export default function Pricing() {
             Осталось {site.seatsLeft} места из {site.seatsTotal}
           </div>
           <h2 style={{ fontSize: "clamp(26px,3.4vw,34px)", margin: "22px 0 24px" }}>
-            Воркшоп «Собери своего ИИ-агента»
+            Интенсив «Вайб-кодинг за 3 часа»
           </h2>
 
           <div>
@@ -57,15 +58,15 @@ export default function Pricing() {
 
           <a
             className="btn btn-primary"
-            href={site.paymentUrl}
+            href={site.registerUrl}
             target="_blank"
             rel="noopener"
             style={{ width: "100%", marginTop: 26, fontSize: 17, padding: 17 }}
           >
-            Оплатить и занять место
+            Записаться на воркшоп
           </a>
           <p className="dim center" style={{ fontSize: 14, marginTop: 16 }}>
-            После оплаты я свяжусь с вами и пришлю детали.
+            Бот попросит имя и телефон — и пришлёт детали оплаты.
           </p>
         </Reveal>
       </div>

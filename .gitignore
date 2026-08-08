@@ -7,3 +7,8 @@
 npm-debug.log*
 .env*.local
 next-env.d.ts
+
+# рабочие исходники ассетов в корне (рабочие копии лежат в public/)
+/*.png
+/*.jpg
+/*.docx

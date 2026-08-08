@@ -2,7 +2,6 @@
 
 import { site } from "@/lib/config";
 import Countdown from "./Countdown";
-import AgentScene from "./AgentScene";
 import Reveal from "./Reveal";
 import ImageSlot from "./ImageSlot";
 
@@ -28,6 +27,7 @@ export default function Hero() {
       <div className="hero-bg-wrap">
         <img src="/hero-bg.jpg" alt="Атмосфера воркшопа" className="hero-bg-img" />
         <div className="hero-bg-overlay" />
+        <div className="grid-bg hero-grid" />
       </div>
 
       <div
@@ -60,25 +60,29 @@ export default function Hero() {
           {site.eventDateLabel}, {site.eventTimeLabel.split(" · ")[0]} · {site.venue}, {site.city}
         </div>
 
+        <p className="eyebrow" style={{ justifyContent: "center" }}>
+          Практический интенсив по вайб-кодингу
+        </p>
+
         <h1 className="h1 hero-title">
-          У предпринимателя всегда не хватает
+          Свой продукт для бизнеса
           <br />
-          одного — <span className="lime">времени</span>
+          <span className="lime">без разработчиков и кода</span>
         </h1>
 
         <p className="lead hero-lead">
-          За три часа вы соберёте себе команду ИИ-агентов, которые заберут рутину. Руками, на своём
-          ноутбуке. Без единой строчки кода.
+          Нужен рабочий инструмент, а собрать некому? За 3 часа соберёте его сами — код пишет ИИ-агент,
+          вы управляете словами. Уйдёте с готовой мини-CRM и навыком собирать что угодно под свои задачи.
         </p>
 
         <Countdown iso={site.eventISO} />
 
         <div className="hero-btns">
-          <a className="btn btn-primary" href={site.paymentUrl}>
+          <a className="btn btn-primary" href={site.registerUrl} target="_blank" rel="noopener">
             Занять место — {site.price}
           </a>
           <button type="button" className="btn btn-secondary" onClick={scrollToProgram}>
-            Что будет на воркшопе
+            Программа интенсива
           </button>
         </div>
 
@@ -96,20 +100,16 @@ export default function Hero() {
           </span>
         </div>
 
-        <Reveal style={{ width: "100%" }}>
-          <AgentScene />
-        </Reveal>
-
-        <Reveal style={{ width: "100%" }} delay={0.1}>
+        <Reveal style={{ width: "100%" }} delay={0.05}>
           <div className="scene glass-strong shot-frame">
             <div className="scene-bar">
               <span className="scene-dot" />
               <span className="scene-dot" />
               <span className="scene-dot" />
-              <span className="scene-url mono">ваш экран · после воркшопа</span>
+              <span className="scene-url mono">моя-crm · собрано на интенсиве</span>
             </div>
             <ImageSlot
-              label="Скриншот вашего рабочего стола с агентами — вставьте после воркшопа"
+              label="Скриншот вашей мини-CRM — вставьте после интенсива"
               style={{ width: "100%", aspectRatio: "16 / 9" }}
             />
           </div>

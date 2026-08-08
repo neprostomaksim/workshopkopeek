@@ -23,12 +23,12 @@ export default function StickyBars() {
     <>
       <header className={`site-header ${scrolled ? "show" : ""}`}>
         <div className="header-bar glass">
-          <div className="logo"><span className="lime">ИИ</span> Воркшоп</div>
+          <div className="logo"><span className="lime mono">&lt;/&gt;</span> Вайб-кодинг</div>
           <div className="header-center mono">
             {site.eventDateLabel.replace("Пятница, ", "")} <span style={{ opacity: 0.4 }}>·</span>{" "}
             <b>{site.city}</b> <span style={{ opacity: 0.4 }}>·</span> {site.venue}
           </div>
-          <a className="btn btn-primary" href={site.paymentUrl} style={{ padding: "11px 20px", fontSize: 15 }}>
+          <a className="btn btn-primary" href={site.registerUrl} target="_blank" rel="noopener" style={{ padding: "11px 20px", fontSize: 15 }}>
             Занять место · {site.price}
           </a>
         </div>
@@ -36,7 +36,7 @@ export default function StickyBars() {
 
       <div className={`mobile-bar glass ${heroPassed ? "show" : ""}`}>
         <span className="mono" style={{ fontWeight: 700, fontSize: 18 }}>{site.price}</span>
-        <a className="btn btn-primary" href={site.paymentUrl} style={{ padding: "12px 22px", fontSize: 15 }}>
+        <a className="btn btn-primary" href={site.registerUrl} target="_blank" rel="noopener" style={{ padding: "12px 22px", fontSize: 15 }}>
           Занять место
         </a>
       </div>

@@ -1,0 +1,20 @@
+# Render Blueprint — деплой Telegram-бота записи как всегда-включённого сервиса.
+# Импортируется в Render: New → Blueprint → выбрать этот репозиторий.
+# Секреты (BOT_TOKEN, SUPABASE_SERVICE_ROLE_KEY) задаются в дашборде (sync: false), не в git.
+services:
+  - type: web
+    name: workshop-tg-bot
+    runtime: node
+    plan: free
+    rootDir: bot
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false

@@ -106,4 +106,47 @@ const ICONS = {
       <path d="M12 8a4 4 0 0 0 0 8 4 4 0 0 0 0-8z" />
     </>
   ),
+  board: (
+    <>
+      <rect x="3" y="4" width="5" height="16" rx="1.5" />
+      <rect x="9.5" y="4" width="5" height="11" rx="1.5" />
+      <rect x="16" y="4" width="5" height="14" rx="1.5" />
+    </>
+  ),
+  settings: (
+    <>
+      <line x1="4" y1="8" x2="20" y2="8" />
+      <line x1="4" y1="16" x2="20" y2="16" />
+      <circle cx="9" cy="8" r="2.4" />
+      <circle cx="15" cy="16" r="2.4" />
+    </>
+  ),
+  blueprint: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <line x1="3" y1="9" x2="21" y2="9" />
+      <line x1="9" y1="9" x2="9" y2="20" />
+      <line x1="13" y1="13" x2="17" y2="13" />
+      <line x1="13" y1="16" x2="17" y2="16" />
+    </>
+  ),
+  flag: (
+    <>
+      <path d="M5 21V4" />
+      <path d="M5 4h11l-2 3 2 3H5" />
+    </>
+  ),
+  instagram: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.2" cy="6.8" r="1.1" fill="var(--lime)" stroke="none" />
+    </>
+  ),
+  telegram: (
+    <>
+      <path d="M22 3 2 10.5l6 2.2L11 19l2.4-3.6L18 19l4-16z" />
+      <path d="m8 12.7 8.5-6" />
+    </>
+  ),
 };

@@ -3,11 +3,10 @@ import Hero from "@/components/Hero";
 import Pain from "@/components/sections/Pain";
 import Shift from "@/components/sections/Shift";
 import Program from "@/components/sections/Program";
-import Format from "@/components/sections/Format";
+import Takeaways from "@/components/sections/Takeaways";
 import Speaker from "@/components/sections/Speaker";
 import Pricing from "@/components/sections/Pricing";
 import Faq from "@/components/sections/Faq";
-import FinalCta from "@/components/sections/FinalCta";
 import Footer from "@/components/sections/Footer";
 
 export default function Page() {
@@ -19,11 +18,10 @@ export default function Page() {
         <Pain />
         <Shift />
         <Program />
-        <Format />
+        <Takeaways />
         <Speaker />
         <Pricing />
         <Faq />
-        <FinalCta />
       </main>
       <Footer />
     </>

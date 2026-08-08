@@ -2,10 +2,10 @@ import Reveal from "../Reveal";
 import { Icon } from "../icons";
 
 const PAINS = [
-  { time: "~1 час", icon: "doc", title: "Коммерческое предложение", text: "Каждый раз под клиента, каждый раз с нуля.", cls: "pain-lg" },
-  { time: "~1 час", icon: "shield", title: "Договор на проверку", text: "И то по диагонали — а потом ищешь, где подписал лишнего.", cls: "pain-sm" },
-  { time: "полгода", icon: "regulation", title: "Регламент для нового сотрудника", text: "Лежит в голове. Всё никак не дойдут руки.", cls: "pain-sm" },
-  { time: "до вечера", icon: "mail", title: "Письмо партнёру", text: "Написать надо аккуратно, поэтому откладывается.", cls: "pain-lg" },
+  { time: "недели", icon: "cube", title: "Своя разработка", text: "ТЗ, подрядчик, правки по кругу — и всё равно получается не то.", cls: "pain-lg" },
+  { time: "бюджет", icon: "shield", title: "Подрядчик под MVP", text: "Платить за то, что пока просто хочется попробовать.", cls: "pain-sm" },
+  { time: "не то", icon: "grid", title: "Готовые сервисы", text: "Всегда чуть не под ваш процесс. Подстраиваетесь вы, а не они.", cls: "pain-sm" },
+  { time: "потом", icon: "doc", title: "Идея в столе", text: "Собрать некому — откладывается на «когда-нибудь».", cls: "pain-lg" },
 ];
 
 export default function Pain() {
@@ -13,10 +13,11 @@ export default function Pain() {
     <section className="section">
       <div className="container">
         <Reveal style={{ maxWidth: 720, margin: "0 0 56px" }}>
-          <p className="eyebrow">Куда уходит время</p>
-          <h2 className="h2" style={{ marginTop: 18 }}>Знакомо?</h2>
+          <p className="eyebrow">Знакомая ситуация</p>
+          <h2 className="h2" style={{ marginTop: 18 }}>Нужен простой инструмент —<br />а собрать некому</h2>
           <p className="lead" style={{ marginTop: 18 }}>
-            Каждая из этих задач по отдельности — ерунда. Вместе они съедают рабочую неделю.
+            Готовые сервисы не под ваш процесс, а своя разработка — это ТЗ, подрядчик, бюджет и недели
+            ожидания.
           </p>
         </Reveal>
 
@@ -34,10 +35,10 @@ export default function Pain() {
 
           <Reveal className="sum-card glass-strong" delay={0.24}>
             <div className="sum-big">
-              А в сумме — <span className="lime">целая рабочая неделя</span> в месяц
+              А ведь рабочий инструмент можно собрать <span className="lime">за один вечер</span> — своими руками
             </div>
             <p className="dim" style={{ fontSize: 16, maxWidth: 320 }}>
-              …которую можно вернуть себе. Именно этим займёмся на воркшопе.
+              Именно этим займёмся на интенсиве.
             </p>
           </Reveal>
         </div>

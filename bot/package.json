@@ -1,0 +1,15 @@
+{
+  "name": "workshop-tg-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Telegram-бот записи на воркшоп: собирает имя + телефон и пишет в Supabase",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "dotenv": "^16.4.5",
+    "grammy": "^1.31.0"
+  }
+}

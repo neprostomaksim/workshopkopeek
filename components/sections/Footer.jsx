@@ -6,10 +6,10 @@ export default function Footer() {
       <div className="container footer-top">
         <div>
           <div className="logo" style={{ marginBottom: 8 }}>
-            <span className="lime">ИИ</span> Воркшоп
+            <span className="lime mono">&lt;/&gt;</span> Вайб-кодинг
           </div>
           <p className="dim" style={{ fontSize: 14 }}>
-            Воркшоп по ИИ-агентам · {site.city}, {site.eventDateLabel.replace("Пятница, ", "")}
+            Интенсив по вайб-кодингу · {site.city}, {site.eventDateLabel.replace("Пятница, ", "")}
           </p>
         </div>
         <div className="footer-links">
