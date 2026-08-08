@@ -12,3 +12,6 @@ next-env.d.ts
 /*.png
 /*.jpg
 /*.docx
+
+# graphify knowledge graph (генерируется локально)
+graphify-out/

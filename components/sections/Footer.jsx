@@ -9,7 +9,7 @@ export default function Footer() {
             <span className="lime mono">&lt;/&gt;</span> Вайб-кодинг
           </div>
           <p className="dim" style={{ fontSize: 14 }}>
-            Интенсив по вайб-кодингу · {site.city}, {site.eventDateLabel.replace("Пятница, ", "")}
+            Интенсив по вайб-кодингу · {site.city}, {site.eventDateLabel.replace(/^[А-Яа-яЁё]+,\s*/, "")}
           </p>
         </div>
         <div className="footer-links">

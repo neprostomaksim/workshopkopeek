@@ -25,7 +25,7 @@ export default function StickyBars() {
         <div className="header-bar glass">
           <div className="logo"><span className="lime mono">&lt;/&gt;</span> Вайб-кодинг</div>
           <div className="header-center mono">
-            {site.eventDateLabel.replace("Пятница, ", "")} <span style={{ opacity: 0.4 }}>·</span>{" "}
+            {site.eventDateLabel.replace(/^[А-Яа-яЁё]+,\s*/, "")} <span style={{ opacity: 0.4 }}>·</span>{" "}
             <b>{site.city}</b> <span style={{ opacity: 0.4 }}>·</span> {site.venue}
           </div>
           <a className="btn btn-primary" href={site.registerUrl} target="_blank" rel="noopener" style={{ padding: "11px 20px", fontSize: 15 }}>
