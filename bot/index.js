@@ -3,13 +3,19 @@ import { createServer } from "node:http";
 import { Bot, Keyboard } from "grammy";
 import { createClient } from "@supabase/supabase-js";
 
-const { BOT_TOKEN, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
+const { BOT_TOKEN, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_CHAT_ID } = process.env;
 
 if (!BOT_TOKEN || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error(
     "❌ Заполните BOT_TOKEN, SUPABASE_URL и SUPABASE_SERVICE_ROLE_KEY в .env (см. .env.example)"
   );
   process.exit(1);
+}
+
+if (!ADMIN_CHAT_ID) {
+  console.warn(
+    "⚠️ ADMIN_CHAT_ID не задан — уведомления о заявках слать некуда. Напишите боту /id, чтобы узнать свой id."
+  );
 }
 
 // service_role обходит RLS — ключ живёт ТОЛЬКО здесь, на сервере. Никогда не кладите его на сайт.
@@ -38,6 +44,13 @@ bot.command("cancel", async (ctx) => {
   await ctx.reply("Отменил. Чтобы записаться заново — /start", {
     reply_markup: { remove_keyboard: true },
   });
+});
+
+// Узнать свой chat id — чтобы вписать в ADMIN_CHAT_ID и получать заявки в этот чат.
+bot.command("id", async (ctx) => {
+  await ctx.reply(
+    `Этот чат id: ${ctx.chat.id}\n\nВпишите его в переменную ADMIN_CHAT_ID — сюда будут приходить заявки.`
+  );
 });
 
 // Телефон, пришедший кнопкой «Отправить телефон»
@@ -114,6 +127,27 @@ async function saveLead(ctx, s, rawPhone) {
     "Готово! Заявка принята ✅\n\nСкоро свяжемся и пришлём детали оплаты и точный адрес.\nДо встречи на воркшопе!",
     { reply_markup: { remove_keyboard: true } }
   );
+
+  // Уведомление организатору о новой заявке.
+  const when = new Date().toLocaleString("ru-RU", { timeZone: "Europe/Minsk" });
+  await notifyAdmin(
+    "🆕 Новая заявка на воркшоп\n\n" +
+      `👤 Имя: ${s.name}\n` +
+      `📞 Телефон: ${phone}\n` +
+      `🔗 Telegram: ${from.username ? "@" + from.username : "—"}\n` +
+      `🏷 Источник: ${s.source}\n` +
+      `🕐 ${when}`
+  );
+}
+
+// Шлём организатору сообщение, если задан ADMIN_CHAT_ID. Ошибка тут не ломает запись клиента.
+async function notifyAdmin(text) {
+  if (!ADMIN_CHAT_ID) return;
+  try {
+    await bot.api.sendMessage(ADMIN_CHAT_ID, text);
+  } catch (e) {
+    console.error("notifyAdmin error:", e);
+  }
 }
 
 function normalizePhone(text) {
