@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { createServer } from "node:http";
-import { Bot, Keyboard } from "grammy";
+import { Bot, Keyboard, webhookCallback } from "grammy";
 import { createClient } from "@supabase/supabase-js";
 
 const { BOT_TOKEN, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_CHAT_ID } = process.env;
@@ -158,14 +158,61 @@ function normalizePhone(text) {
 
 bot.catch((err) => console.error("Bot error:", err));
 
-// Мини HTTP-сервер: нужен, чтобы деплоить на бесплатный Web Service (Render/аналоги),
-// который требует слушать порт, и чтобы пинг-сервис не давал сервису «уснуть».
+// ── Запуск ────────────────────────────────────────────────────────────────
+// На Render (есть публичный URL) — webhook: Telegram сам шлёт апдейты на наш адрес,
+// поэтому нет long-polling и нет конфликта 409 при передеплое.
+// Локально (URL нет) — long polling для удобного теста.
 const PORT = process.env.PORT || 3000;
-createServer((_req, res) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("ok");
-}).listen(PORT, () => console.log(`🌐 health-сервер слушает порт ${PORT}`));
+const PUBLIC_URL = process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_URL || "";
+const SECRET = (BOT_TOKEN.split(":")[1] || "hook").replace(/[^A-Za-z0-9_-]/g, ""); // для проверки, что запрос от Telegram
+const WEBHOOK_PATH = "/telegram";
 
-bot.start({
-  onStart: (info) => console.log(`✅ Бот @${info.username} запущен`),
-});
+if (PUBLIC_URL) {
+  const handleUpdate = webhookCallback(bot, "http", { secretToken: SECRET });
+
+  const server = createServer(async (req, res) => {
+    if (req.method === "POST" && req.url === WEBHOOK_PATH) {
+      try {
+        await handleUpdate(req, res);
+      } catch (e) {
+        console.error("webhook error:", e);
+        if (!res.headersSent) {
+          res.writeHead(200);
+          res.end();
+        }
+      }
+      return;
+    }
+    // Health-эндпоинт (для Render и пинг-сервиса UptimeRobot)
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("ok");
+  });
+
+  server.listen(PORT, async () => {
+    console.log(`🌐 сервер слушает порт ${PORT}`);
+    try {
+      await bot.init();
+      await bot.api.setWebhook(`${PUBLIC_URL}${WEBHOOK_PATH}`, {
+        secret_token: SECRET,
+        drop_pending_updates: true,
+      });
+      console.log(`✅ Бот @${bot.botInfo.username} на webhook: ${PUBLIC_URL}${WEBHOOK_PATH}`);
+    } catch (e) {
+      console.error("setWebhook error:", e);
+    }
+  });
+} else {
+  // Локальный режим: снимаем возможный webhook и работаем polling.
+  bot.api
+    .deleteWebhook({ drop_pending_updates: false })
+    .catch(() => {})
+    .finally(() => {
+      createServer((_req, res) => {
+        res.writeHead(200);
+        res.end("ok");
+      }).listen(PORT, () => console.log(`🌐 health-сервер слушает порт ${PORT}`));
+      bot.start({
+        onStart: (info) => console.log(`✅ Бот @${info.username} запущен (polling)`),
+      });
+    });
+}
