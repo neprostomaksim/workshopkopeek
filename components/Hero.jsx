@@ -57,7 +57,7 @@ export default function Hero() {
       <div className="container center hero-inner">
         <div className="pill glass">
           <span className="pulse-dot" />
-          {site.eventDateLabel}, {site.eventTimeLabel.split(" · ")[0]} · {site.venue}, {site.city}
+          {site.eventDateLabel} · {site.venue}, {site.city}
         </div>
 
         <p className="eyebrow" style={{ justifyContent: "center" }}>
