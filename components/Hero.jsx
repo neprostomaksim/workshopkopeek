@@ -3,7 +3,6 @@
 import { site } from "@/lib/config";
 import Countdown from "./Countdown";
 import Reveal from "./Reveal";
-import ImageSlot from "./ImageSlot";
 
 const AV = [
   { c: "var(--lime)", t: "М" },
@@ -108,9 +107,10 @@ export default function Hero() {
               <span className="scene-dot" />
               <span className="scene-url mono">моя-crm · собрано на интенсиве</span>
             </div>
-            <ImageSlot
-              label="Скриншот вашей мини-CRM — вставьте после интенсива"
-              style={{ width: "100%", aspectRatio: "16 / 9" }}
+            <img
+              src="/crm.png"
+              alt="Мини-CRM, собранная на интенсиве: доска сделок по статусам"
+              style={{ width: "100%", height: "auto", display: "block" }}
             />
           </div>
         </Reveal>
