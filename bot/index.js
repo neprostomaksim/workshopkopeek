@@ -1,6 +1,8 @@
 import "dotenv/config";
 import { createServer } from "node:http";
-import { Bot, Keyboard, webhookCallback } from "grammy";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { Bot, Keyboard, InputFile, InlineKeyboard, webhookCallback } from "grammy";
 import { createClient } from "@supabase/supabase-js";
 
 const { BOT_TOKEN, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_CHAT_ID } = process.env;
@@ -28,6 +30,12 @@ const bot = new Bot(BOT_TOKEN);
 // Состояние диалога в памяти. Для больших нагрузок вынести в Redis/БД.
 const sessions = new Map(); // chatId -> { step: 'name'|'phone', name?, source }
 const DEFAULT_SOURCE = "vibe-coding";
+
+// Оплата воркшопа (express-pay / ЕРИП).
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const PAYMENT_URL = "https://client.express-pay.by/show?k=DA336C71-5769-4A6F-802E-CF80BCAA6165";
+const PRICE = "130 BYN";
+const QR_PATH = join(__dirname, "qr.png");
 
 bot.command("start", async (ctx) => {
   // ?start=vibecoding из ссылки лендинга приходит сюда — метка, с какого лендинга заявка.
@@ -124,9 +132,10 @@ async function saveLead(ctx, s, rawPhone) {
   }
 
   await ctx.reply(
-    "Готово! Заявка принята ✅\n\nСкоро свяжемся и пришлём детали оплаты и точный адрес.\nДо встречи на воркшопе!",
+    "Готово! Заявка принята ✅\n\nОсталось оплатить участие — ссылка и QR-код ниже 👇",
     { reply_markup: { remove_keyboard: true } }
   );
+  await sendPayment(ctx);
 
   // Уведомление организатору о новой заявке.
   const when = new Date().toLocaleString("ru-RU", { timeZone: "Europe/Minsk" });
@@ -147,6 +156,26 @@ async function notifyAdmin(text) {
     await bot.api.sendMessage(ADMIN_CHAT_ID, text);
   } catch (e) {
     console.error("notifyAdmin error:", e);
+  }
+}
+
+// Отправляет клиенту QR-код и кнопку-ссылку на оплату.
+async function sendPayment(ctx) {
+  const caption =
+    `💳 Оплата участия — ${PRICE}\n\n` +
+    "Оплатите онлайн по кнопке ниже или отсканируйте QR-код — как удобнее.\n" +
+    "После оплаты пришлём точный адрес и детали.";
+  try {
+    await ctx.replyWithPhoto(new InputFile(QR_PATH), {
+      caption,
+      reply_markup: new InlineKeyboard().url("💳 Оплатить онлайн", PAYMENT_URL),
+    });
+  } catch (e) {
+    console.error("sendPayment error:", e);
+    // Фолбэк: если фото не ушло — хотя бы ссылка текстом с кнопкой.
+    await ctx.reply(`💳 Оплата участия — ${PRICE}\n${PAYMENT_URL}`, {
+      reply_markup: new InlineKeyboard().url("💳 Оплатить онлайн", PAYMENT_URL),
+    });
   }
 }
 
