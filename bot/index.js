@@ -41,6 +41,7 @@ bot.command("start", async (ctx) => {
   // ?start=vibecoding из ссылки лендинга приходит сюда — метка, с какого лендинга заявка.
   const source = (ctx.match || "").trim() || DEFAULT_SOURCE;
   sessions.set(ctx.chat.id, { step: "name", source });
+  logStart(ctx, source); // фиксируем вход в бота (для статистики), не блокируя ответ
   await ctx.reply(
     "Здравствуйте! 👋\nЗапишу вас на воркшоп «Вайб-кодинг за 3 часа».\n\nКак вас зовут?",
     { reply_markup: { remove_keyboard: true } }
@@ -157,6 +158,24 @@ async function notifyAdmin(text) {
   } catch (e) {
     console.error("notifyAdmin error:", e);
   }
+}
+
+// Фиксируем вход в бота (нажатие /start) в таблицу bot_events — для статистики
+// переходов и конверсии. Fire-and-forget: не ждём и не ломаем диалог при ошибке
+// (например, если таблица bot_events ещё не создана).
+function logStart(ctx, source) {
+  const from = ctx.from || {};
+  supabase
+    .from("bot_events")
+    .insert({
+      type: "start",
+      tg_user_id: from.id ?? null,
+      tg_username: from.username ?? null,
+      source,
+    })
+    .then(({ error }) => {
+      if (error) console.error("bot_events insert error:", error.message || error);
+    });
 }
 
 // Отправляет клиенту QR-код и кнопку-ссылку на оплату.
