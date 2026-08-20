@@ -1,5 +1,6 @@
 import { Montserrat, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import Analytics from "../components/Analytics";
 
 const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
@@ -37,7 +38,10 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ru" className={`${montserrat.variable} ${jetbrains.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics site="workshopkopeek" />
+      </body>
     </html>
   );
 }
