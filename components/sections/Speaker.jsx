@@ -20,8 +20,7 @@ export default function Speaker() {
               </p>
               <p className="lead" style={{ marginTop: 22 }}>
                 Провожу корпоративные обучения и мастер-классы по ИИ для бизнеса — от банков до
-                аудиторских компаний. Руководитель корпоративного обучения M.AI.N community.
-                Превращаю хаос нейросетей в понятный и управляемый инструмент.
+                аудиторских компаний. Превращаю хаос нейросетей в понятный и управляемый инструмент.
               </p>
 
               <div className="speaker-links">
@@ -31,14 +30,10 @@ export default function Speaker() {
                 <a href={site.speaker.telegramUrl} className="social-btn" target="_blank" rel="noopener" aria-label="Telegram-канал Максима">
                   <Icon name="telegram" />
                 </a>
-                <a href={site.speaker.mainUrl} className="main-logo-link" target="_blank" rel="noopener" aria-label="M.AI.N community в Telegram">
-                  <img src="/main-logo.png" alt="M.AI.N community" />
-                </a>
               </div>
 
-              <div className="stat-row stat-2">
+              <div className="stat-row" style={{ display: "inline-flex" }}>
                 <div className="stat glass"><b className="mono">{site.trainedCount}</b><span className="dim" style={{ fontSize: 14 }}>человек обучено</span></div>
-                <div className="stat glass"><b>{site.community}</b><span className="dim" style={{ fontSize: 14 }}>сообщество</span></div>
               </div>
             </Reveal>
           </div>
