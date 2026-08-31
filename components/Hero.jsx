@@ -2,7 +2,6 @@
 
 import { site } from "@/lib/config";
 import Countdown from "./Countdown";
-import Reveal from "./Reveal";
 
 const AV = [
   { c: "var(--lime)", t: "М" },
@@ -98,22 +97,6 @@ export default function Hero() {
             <b style={{ color: "var(--amber)" }}>{site.seatsLeft} места</b> из {site.seatsTotal}
           </span>
         </div>
-
-        <Reveal style={{ width: "100%" }} delay={0.05}>
-          <div className="scene glass-strong shot-frame">
-            <div className="scene-bar">
-              <span className="scene-dot" />
-              <span className="scene-dot" />
-              <span className="scene-dot" />
-              <span className="scene-url mono">моя-crm · собрано на интенсиве</span>
-            </div>
-            <img
-              src="/crm.png"
-              alt="Мини-CRM, собранная на интенсиве: доска сделок по статусам"
-              style={{ width: "100%", height: "auto", display: "block" }}
-            />
-          </div>
-        </Reveal>
       </div>
     </section>
   );
