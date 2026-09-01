@@ -65,8 +65,8 @@ img { max-width: 100%; display: block; }
 .eyebrow::before {
   content: ""; width: 22px; height: 1px; background: var(--lime); opacity: .6;
 }
-.h1 { font-size: clamp(40px, 8vw, 78px); font-weight: 800; }
-.h2 { font-size: clamp(28px, 4.6vw, 46px); font-weight: 700; }
+.h1 { font-size: clamp(30px, 8vw, 78px); font-weight: 800; overflow-wrap: break-word; }
+.h2 { font-size: clamp(26px, 4.6vw, 46px); font-weight: 700; overflow-wrap: break-word; }
 .lead { font-size: clamp(17px, 2vw, 19px); color: var(--text-dim); line-height: 1.62; font-weight: 400; }
 
 .glass {
@@ -509,6 +509,9 @@ img { max-width: 100%; display: block; }
   .board { grid-template-columns: 1fr; }
 }
 @media (max-width: 767px) {
+  .eyebrow { letter-spacing: 0.1em; font-size: 11px; }
+  .eyebrow::before { width: 14px; }
+  .pill { max-width: 100%; flex-wrap: wrap; justify-content: center; line-height: 1.5; }
   .mobile-bar {
     display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
     align-items: center; justify-content: space-between; gap: 14px; padding: 14px 18px;

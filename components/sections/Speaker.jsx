@@ -30,6 +30,9 @@ export default function Speaker() {
                 <a href={site.speaker.telegramUrl} className="social-btn" target="_blank" rel="noopener" aria-label="Telegram-канал Максима">
                   <Icon name="telegram" />
                 </a>
+                <a href={site.speaker.siteUrl} className="social-btn" target="_blank" rel="noopener" aria-label="Сайт nempl.app">
+                  <Icon name="globe" />
+                </a>
               </div>
 
               <div className="stat-row" style={{ display: "inline-flex" }}>
