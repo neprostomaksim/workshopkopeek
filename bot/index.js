@@ -28,7 +28,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 const bot = new Bot(BOT_TOKEN);
 
 // Состояние диалога в памяти. Для больших нагрузок вынести в Redis/БД.
-const sessions = new Map(); // chatId -> { step: 'name'|'phone', name?, source }
+const sessions = new Map(); // chatId -> { step: 'pick'|'name'|'phone', name?, source, workshop? }
 const DEFAULT_SOURCE = "vibe-coding";
 
 // Оплата воркшопа (express-pay / ЕРИП).
@@ -37,14 +37,29 @@ const PAYMENT_URL = "https://client.express-pay.by/show?k=DA336C71-5769-4A6F-802
 const PRICE = "130 BYN";
 const QR_PATH = join(__dirname, "qr.png");
 
+// Расписание воркшопов. Чтобы изменить/добавить — правьте этот список (и передеплойте).
+const VENUE = "Минск, Пространство «Молоко»";
+const WORKSHOPS = [
+  { id: "ai-agents-29-09", date: "29 сентября", title: "Создание ИИ-агентов" },
+  { id: "vibe-coding-06-10", date: "6 октября", title: "Вайб-кодинг для предпринимателей" },
+  { id: "ai-sales-13-10", date: "13 октября", title: "Создание ИИ-менеджера по продажам" },
+  { id: "vibe-coding-20-10", date: "20 октября", title: "Вайб-кодинг для предпринимателей" },
+];
+const workshopById = (id) => WORKSHOPS.find((w) => w.id === id) || null;
+function workshopKeyboard() {
+  const kb = new InlineKeyboard();
+  for (const w of WORKSHOPS) kb.text(`${w.date} — ${w.title}`, `w:${w.id}`).row();
+  return kb;
+}
+
 bot.command("start", async (ctx) => {
-  // ?start=vibecoding из ссылки лендинга приходит сюда — метка, с какого лендинга заявка.
+  // ?start=... из ссылки лендинга — метка источника (для статистики).
   const source = (ctx.match || "").trim() || DEFAULT_SOURCE;
-  sessions.set(ctx.chat.id, { step: "name", source });
+  sessions.set(ctx.chat.id, { step: "pick", source });
   logStart(ctx, source); // фиксируем вход в бота (для статистики), не блокируя ответ
   await ctx.reply(
-    "Здравствуйте! 👋\nЗапишу вас на воркшоп «Вайб-кодинг за 3 часа».\n\nКак вас зовут?",
-    { reply_markup: { remove_keyboard: true } }
+    `Здравствуйте! 👋\nВыберите воркшоп, на который хотите записаться:\n\n📍 ${VENUE}`,
+    { reply_markup: workshopKeyboard() }
   );
 });
 
@@ -62,6 +77,22 @@ bot.command("id", async (ctx) => {
   );
 });
 
+// Выбор воркшопа из списка кнопок.
+bot.on("callback_query:data", async (ctx) => {
+  const data = ctx.callbackQuery.data || "";
+  if (!data.startsWith("w:")) return void ctx.answerCallbackQuery();
+  const w = workshopById(data.slice(2));
+  if (!w) return void ctx.answerCallbackQuery({ text: "Воркшоп не найден" });
+
+  const prev = sessions.get(ctx.chat.id) || {};
+  sessions.set(ctx.chat.id, { step: "name", source: prev.source || DEFAULT_SOURCE, workshop: w });
+  await ctx.answerCallbackQuery();
+  try {
+    await ctx.editMessageText(`✅ Воркшоп: ${w.title}\n🗓 ${w.date} · ${VENUE}`);
+  } catch (_) {}
+  await ctx.reply("Как вас зовут?", { reply_markup: { remove_keyboard: true } });
+});
+
 // Телефон, пришедший кнопкой «Отправить телефон»
 bot.on("message:contact", async (ctx) => {
   const s = sessions.get(ctx.chat.id);
@@ -77,6 +108,13 @@ bot.on("message:text", async (ctx) => {
   const s = sessions.get(ctx.chat.id);
   if (!s) {
     await ctx.reply("Чтобы записаться на воркшоп, нажмите /start");
+    return;
+  }
+
+  if (s.step === "pick") {
+    await ctx.reply("Пожалуйста, выберите воркшоп кнопкой выше 👆", {
+      reply_markup: workshopKeyboard(),
+    });
     return;
   }
 
@@ -112,11 +150,13 @@ bot.on("message:text", async (ctx) => {
 async function saveLead(ctx, s, rawPhone) {
   const from = ctx.from || {};
   const phone = normalizePhone(rawPhone) || rawPhone;
+  const w = s.workshop;
+  const workshopLabel = w ? `${w.title} · ${w.date}` : s.source;
 
   const { error } = await supabase.from("workshop_leads").insert({
     name: s.name,
     phone,
-    source: s.source,
+    source: workshopLabel, // какой воркшоп выбрал участник
     tg_user_id: from.id ?? null,
     tg_username: from.username ?? null,
   });
@@ -133,7 +173,8 @@ async function saveLead(ctx, s, rawPhone) {
   }
 
   await ctx.reply(
-    "Готово! Заявка принята ✅\n\nОсталось оплатить участие — ссылка и QR-код ниже 👇",
+    `Готово! Заявка на «${w ? w.title : "воркшоп"}»${w ? ` (${w.date})` : ""} принята ✅\n\n` +
+      "Осталось оплатить участие — ссылка и QR-код ниже 👇",
     { reply_markup: { remove_keyboard: true } }
   );
   await sendPayment(ctx);
@@ -141,11 +182,11 @@ async function saveLead(ctx, s, rawPhone) {
   // Уведомление организатору о новой заявке.
   const when = new Date().toLocaleString("ru-RU", { timeZone: "Europe/Minsk" });
   await notifyAdmin(
-    "🆕 Новая заявка на воркшоп\n\n" +
+    "🆕 Новая заявка\n\n" +
+      `🎓 Воркшоп: ${workshopLabel}\n` +
       `👤 Имя: ${s.name}\n` +
       `📞 Телефон: ${phone}\n` +
       `🔗 Telegram: ${from.username ? "@" + from.username : "—"}\n` +
-      `🏷 Источник: ${s.source}\n` +
       `🕐 ${when}`
   );
 }
