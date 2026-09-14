@@ -174,10 +174,11 @@ async function saveLead(ctx, s, rawPhone) {
 
   await ctx.reply(
     `Готово! Заявка на «${w ? w.title : "воркшоп"}»${w ? ` (${w.date})` : ""} принята ✅\n\n` +
-      "Осталось оплатить участие — ссылка и QR-код ниже 👇",
+      "Скоро свяжемся и пришлём детали. До встречи на воркшопе!",
     { reply_markup: { remove_keyboard: true } }
   );
-  await sendPayment(ctx);
+  // Оплата временно отключена. Чтобы вернуть — раскомментируйте строку ниже.
+  // await sendPayment(ctx);
 
   // Уведомление организатору о новой заявке.
   const when = new Date().toLocaleString("ru-RU", { timeZone: "Europe/Minsk" });
