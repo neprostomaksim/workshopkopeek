@@ -533,23 +533,15 @@ img { max-width: 100%; display: block; }
 /* ============================================================
    GALLERY — как проходят воркшопы (masonry)
    ============================================================ */
-.gallery { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 150px; gap: 12px; }
-.gallery-item { overflow: hidden; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22); }
-.gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
-.gallery-item:nth-child(2) { grid-row: span 2; }
-.gallery-item:nth-child(3) { grid-row: span 2; }
-.gallery-item:nth-child(4) { grid-column: span 2; }
+.gallery { column-count: 3; column-gap: 14px; }
+.gallery-item { break-inside: avoid; margin: 0 0 14px; overflow: hidden; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22); }
+.gallery-item img { width: 100%; height: auto; display: block; }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes dialogIn { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 1000px) { .sched-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 760px) {
-  .gallery { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 140px; }
-  .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 1; }
-  .gallery-item:nth-child(2), .gallery-item:nth-child(3), .gallery-item:nth-child(4) { grid-column: auto; grid-row: auto; }
-}
+@media (max-width: 900px) { .gallery { column-count: 2; } }
 @media (max-width: 560px) { .sched-grid { grid-template-columns: 1fr; } .sched-dialog { padding: 32px 22px 26px; } }
 
 @media (max-width: 900px) {
