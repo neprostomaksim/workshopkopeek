@@ -13,8 +13,8 @@ export default function Page() {
       <main>
         <Hero />
         <Schedule />
-        <Gallery />
         <Speaker />
+        <Gallery />
         <Faq />
       </main>
       <Footer />

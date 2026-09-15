@@ -1,7 +1,7 @@
 import Reveal from "../Reveal";
 
 // Фото лежат в public/gallery. Порядок подобран под masonry (чередование ориентаций).
-const PHOTOS = ["g2.jpg", "g1.jpg", "g4.jpg", "g5.jpg", "g6.jpg", "g3.jpg"];
+const PHOTOS = ["g1.jpg", "g2.jpg", "g4.jpg", "g5.jpg", "g6.jpg", "g3.jpg"];
 
 export default function Gallery() {
   return (
