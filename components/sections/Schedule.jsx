@@ -51,7 +51,7 @@ export default function Schedule() {
               <span className="sched-num mono">{String(i + 1).padStart(2, "0")}</span>
               <span className="sched-date-badge mono">
                 {wk.date}
-                <span>{wk.weekday}</span>
+                <span>{wk.weekday} · {wk.time}</span>
               </span>
               <h3 className="sched-title">{wk.title}</h3>
               <p className="sched-tagline">{wk.tagline}</p>
@@ -76,7 +76,7 @@ export default function Schedule() {
             </button>
             <span className="sched-date-badge mono">
               {w.date}
-              <span>{w.weekday}</span>
+              <span>{w.weekday} · {w.time}</span>
             </span>
             <h3 className="sched-dialog-title">{w.title}</h3>
             <p className="sched-dialog-tagline">{w.tagline}</p>
