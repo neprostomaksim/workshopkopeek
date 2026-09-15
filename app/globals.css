@@ -503,35 +503,46 @@ img { max-width: 100%; display: block; }
 .mobile-bar { display: none; }
 
 /* ============================================================
-   SCHEDULE — карточки воркшопов (раскрываются по клику)
+   SCHEDULE — одинаковые карточки + модалка деталей
    ============================================================ */
-.sched-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; align-items: start; }
-.sched-card { overflow: hidden; padding: 0; transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease; }
-.sched-card:hover { border-color: rgba(198, 244, 50, 0.3); box-shadow: 0 0 34px rgba(198, 244, 50, 0.10); }
-.sched-card.open { border-color: rgba(198, 244, 50, 0.34); box-shadow: 0 0 40px rgba(198, 244, 50, 0.12); }
-.sched-head {
-  display: block; width: 100%; text-align: left; cursor: pointer;
-  background: none; border: 0; color: inherit; font-family: inherit;
-  padding: 26px 24px 22px;
+.sched-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.sched-card {
+  display: flex; flex-direction: column; align-items: flex-start;
+  text-align: left; cursor: pointer; font-family: inherit; color: inherit;
+  padding: 28px 24px 22px; position: relative; overflow: hidden;
+  transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
 }
-.sched-date { display: flex; flex-direction: column; gap: 2px; font-size: 17px; font-weight: 700; color: var(--lime); letter-spacing: -0.01em; }
-.sched-wd { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); font-weight: 500; }
-.sched-title { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; margin: 16px 0 8px; line-height: 1.18; }
+.sched-card:hover { transform: translateY(-5px); border-color: rgba(198, 244, 50, 0.34); box-shadow: 0 0 42px rgba(198, 244, 50, 0.12); }
+.sched-num { position: absolute; top: 16px; right: 20px; font-size: 42px; font-weight: 800; color: rgba(255, 255, 255, 0.055); line-height: 1; pointer-events: none; }
+.sched-date-badge { display: inline-flex; flex-direction: column; gap: 2px; padding: 8px 14px; border-radius: 12px; background: var(--lime-soft); border: 1px solid rgba(198, 244, 50, 0.22); color: var(--lime); font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.sched-date-badge span { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); font-weight: 500; }
+.sched-title { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; margin: 20px 0 8px; line-height: 1.2; }
 .sched-tagline { font-size: 14.5px; color: var(--text-dim); line-height: 1.45; }
-.sched-more { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--lime); }
-.sched-plus { width: 18px; height: 18px; position: relative; transition: transform .35s ease; flex: none; }
-.sched-plus::before, .sched-plus::after { content: ""; position: absolute; background: currentColor; border-radius: 2px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-.sched-plus::before { width: 12px; height: 2px; }
-.sched-plus::after { width: 2px; height: 12px; }
-.sched-plus.open { transform: rotate(45deg); }
-.sched-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s ease; }
-.sched-body.open { grid-template-rows: 1fr; }
-.sched-body > div { overflow: hidden; }
-.sched-inner { padding: 18px 24px 26px; border-top: 1px solid var(--border); }
-.sched-desc { font-size: 15px; color: var(--text-dim); line-height: 1.6; }
+.sched-more { margin-top: auto; padding-top: 22px; display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600; color: var(--lime); }
+.sched-more svg { width: 16px; height: 16px; transition: transform .25s ease; }
+.sched-card:hover .sched-more svg { transform: translateX(4px); }
+.sched-desc { font-size: 15px; color: var(--text-dim); line-height: 1.62; }
+
+.sched-modal { position: fixed; inset: 0; z-index: 120; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(5, 6, 8, 0.74); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: fadeIn .2s ease; }
+.sched-dialog { position: relative; max-width: 560px; width: 100%; padding: 40px 38px 34px; border-radius: 26px; animation: dialogIn .28s ease; }
+.sched-close { position: absolute; top: 16px; right: 16px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--glass); color: var(--text); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .2s ease; }
+.sched-close:hover { border-color: rgba(198, 244, 50, 0.4); }
+.sched-dialog-title { font-size: 27px; font-weight: 700; letter-spacing: -0.02em; margin: 18px 0 8px; line-height: 1.15; }
+.sched-dialog-tagline { font-size: 16px; color: var(--lime); font-weight: 600; margin-bottom: 18px; }
+
+/* ============================================================
+   GALLERY — как проходят воркшопы (masonry)
+   ============================================================ */
+.gallery { column-count: 3; column-gap: 16px; }
+.gallery-item { break-inside: avoid; margin: 0 0 16px; }
+.gallery-item img { width: 100%; display: block; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dialogIn { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 1000px) { .sched-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .sched-grid { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .gallery { column-count: 2; } }
+@media (max-width: 560px) { .sched-grid { grid-template-columns: 1fr; } .sched-dialog { padding: 32px 22px 26px; } }
 
 @media (max-width: 900px) {
   .scene-body { grid-template-columns: repeat(2, 1fr); }
