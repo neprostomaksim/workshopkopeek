@@ -1,7 +1,6 @@
 "use client";
 
 import { site } from "@/lib/config";
-import Countdown from "./Countdown";
 
 const AV = [
   { c: "var(--lime)", t: "М" },
@@ -10,8 +9,8 @@ const AV = [
 ];
 
 export default function Hero() {
-  const scrollToProgram = () => {
-    const el = document.getElementById("program");
+  const scrollTo = (id) => {
+    const el = document.getElementById(id);
     if (!el) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({
@@ -55,33 +54,31 @@ export default function Hero() {
       <div className="container center hero-inner">
         <div className="pill glass">
           <span className="pulse-dot" />
-          {site.eventDateLabel} · {site.venue}, {site.city}
+          Сентябрь–октябрь · {site.venue}, {site.city}
         </div>
 
         <p className="eyebrow" style={{ justifyContent: "center" }}>
-          Практический интенсив по вайб-кодингу
+          Практические воркшопы по ИИ для бизнеса
         </p>
 
         <h1 className="h1 hero-title">
-          Свой продукт для бизнеса
+          Нейросети для бизнеса —
           <br />
-          <span className="lime">без разработчиков и кода</span>
+          <span className="lime">руками, за один вечер</span>
         </h1>
 
         <p className="lead hero-lead">
-          Нужен рабочий инструмент, а собрать некому? За 3 часа соберёте его сами — код пишет ИИ-агент,
-          вы управляете словами. Уйдёте с готовой мини-CRM и навыком собирать что угодно под свои задачи.
+          Цикл из четырёх практических воркшопов: ИИ-агенты, вайб-кодинг и ИИ-менеджер. Без кода, на
+          ваших реальных задачах — уходите не с теорией, а с готовым результатом.
         </p>
 
-        <Countdown iso={site.eventISO} />
-
         <div className="hero-btns">
-          <a className="btn btn-primary" href={site.registerUrl} target="_blank" rel="noopener">
-            Занять место — {site.price}
-          </a>
-          <button type="button" className="btn btn-secondary" onClick={scrollToProgram}>
-            Программа интенсива
+          <button type="button" className="btn btn-primary" onClick={() => scrollTo("schedule")}>
+            Смотреть расписание
           </button>
+          <a className="btn btn-secondary" href={site.registerUrl} target="_blank" rel="noopener">
+            Записаться
+          </a>
         </div>
 
         <div className="proof glass">
@@ -93,8 +90,7 @@ export default function Hero() {
             ))}
           </div>
           <span className="proof-text">
-            <b>{site.trainedCount} человек</b> уже прошли обучение · осталось{" "}
-            <b style={{ color: "var(--amber)" }}>{site.seatsLeft} места</b> из {site.seatsTotal}
+            <b>{site.trainedCount} человек</b> уже прошли обучение у Максима Леонова
           </span>
         </div>
       </div>

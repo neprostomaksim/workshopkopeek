@@ -502,6 +502,37 @@ img { max-width: 100%; display: block; }
    ============================================================ */
 .mobile-bar { display: none; }
 
+/* ============================================================
+   SCHEDULE — карточки воркшопов (раскрываются по клику)
+   ============================================================ */
+.sched-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; align-items: start; }
+.sched-card { overflow: hidden; padding: 0; transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease; }
+.sched-card:hover { border-color: rgba(198, 244, 50, 0.3); box-shadow: 0 0 34px rgba(198, 244, 50, 0.10); }
+.sched-card.open { border-color: rgba(198, 244, 50, 0.34); box-shadow: 0 0 40px rgba(198, 244, 50, 0.12); }
+.sched-head {
+  display: block; width: 100%; text-align: left; cursor: pointer;
+  background: none; border: 0; color: inherit; font-family: inherit;
+  padding: 26px 24px 22px;
+}
+.sched-date { display: flex; flex-direction: column; gap: 2px; font-size: 17px; font-weight: 700; color: var(--lime); letter-spacing: -0.01em; }
+.sched-wd { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); font-weight: 500; }
+.sched-title { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; margin: 16px 0 8px; line-height: 1.18; }
+.sched-tagline { font-size: 14.5px; color: var(--text-dim); line-height: 1.45; }
+.sched-more { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--lime); }
+.sched-plus { width: 18px; height: 18px; position: relative; transition: transform .35s ease; flex: none; }
+.sched-plus::before, .sched-plus::after { content: ""; position: absolute; background: currentColor; border-radius: 2px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.sched-plus::before { width: 12px; height: 2px; }
+.sched-plus::after { width: 2px; height: 12px; }
+.sched-plus.open { transform: rotate(45deg); }
+.sched-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s ease; }
+.sched-body.open { grid-template-rows: 1fr; }
+.sched-body > div { overflow: hidden; }
+.sched-inner { padding: 18px 24px 26px; border-top: 1px solid var(--border); }
+.sched-desc { font-size: 15px; color: var(--text-dim); line-height: 1.6; }
+
+@media (max-width: 1000px) { .sched-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .sched-grid { grid-template-columns: 1fr; } }
+
 @media (max-width: 900px) {
   .scene-body { grid-template-columns: repeat(2, 1fr); }
 }
