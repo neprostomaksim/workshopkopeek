@@ -33,7 +33,7 @@ const DEFAULT_SOURCE = "vibe-coding";
 
 // Оплата воркшопа (express-pay / ЕРИП).
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const PAYMENT_URL = "https://client.express-pay.by/show?k=DA336C71-5769-4A6F-802E-CF80BCAA6165";
+const PAYMENT_URL = "https://client.express-pay.by/show?k=2E4F8596-B7B0-4E8C-8AAC-07BA78696B99";
 const PRICE = "130 BYN";
 const QR_PATH = join(__dirname, "qr.png");
 
@@ -174,11 +174,10 @@ async function saveLead(ctx, s, rawPhone) {
 
   await ctx.reply(
     `Готово! Заявка на «${w ? w.title : "воркшоп"}»${w ? ` (${w.date})` : ""} принята ✅\n\n` +
-      "Скоро свяжемся и пришлём детали. До встречи на воркшопе!",
+      "Осталось оплатить участие — ссылка и QR-код ниже 👇",
     { reply_markup: { remove_keyboard: true } }
   );
-  // Оплата временно отключена. Чтобы вернуть — раскомментируйте строку ниже.
-  // await sendPayment(ctx);
+  await sendPayment(ctx);
 
   // Уведомление организатору о новой заявке.
   const when = new Date().toLocaleString("ru-RU", { timeZone: "Europe/Minsk" });
@@ -223,9 +222,9 @@ function logStart(ctx, source) {
 // Отправляет клиенту QR-код и кнопку-ссылку на оплату.
 async function sendPayment(ctx) {
   const caption =
-    `💳 Оплата участия — ${PRICE}\n\n` +
-    "Оплатите онлайн по кнопке ниже или отсканируйте QR-код — как удобнее.\n" +
-    "После оплаты пришлём точный адрес и детали.";
+    "💳 Оплата участия\n\n" +
+    "Оплатите онлайн по кнопке ниже или отсканируйте QR-код (ЕРИП) — как удобнее.\n" +
+    "Сумма указана в форме оплаты. После оплаты пришлём точный адрес и детали.";
   try {
     await ctx.replyWithPhoto(new InputFile(QR_PATH), {
       caption,
@@ -234,7 +233,7 @@ async function sendPayment(ctx) {
   } catch (e) {
     console.error("sendPayment error:", e);
     // Фолбэк: если фото не ушло — хотя бы ссылка текстом с кнопкой.
-    await ctx.reply(`💳 Оплата участия — ${PRICE}\n${PAYMENT_URL}`, {
+    await ctx.reply(`💳 Оплата участия\n${PAYMENT_URL}`, {
       reply_markup: new InlineKeyboard().url("💳 Оплатить онлайн", PAYMENT_URL),
     });
   }
