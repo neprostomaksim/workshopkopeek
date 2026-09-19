@@ -5,7 +5,7 @@ const PHOTOS = ["g1.jpg", "g2.jpg", "g4.jpg", "g5.jpg", "g6.jpg", "g3.jpg"];
 
 export default function Gallery() {
   return (
-    <section className="section" style={{ background: "var(--bg-2)" }}>
+    <section className="section" id="atmosphere" style={{ background: "var(--bg-2)" }}>
       <div className="container">
         <Reveal className="center" style={{ margin: "0 auto 56px" }}>
           <p className="eyebrow" style={{ justifyContent: "center" }}>Атмосфера</p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Reveal from "../Reveal";
 import { workshops } from "@/lib/workshops";
 import { site } from "@/lib/config";
@@ -13,28 +13,42 @@ const Arrow = () => (
 );
 
 export default function Schedule() {
+  const dialogRef = useRef(null);
   const [active, setActive] = useState(null);
   const w = active != null ? workshops[active] : null;
 
   useEffect(() => {
     if (active == null) return;
-    const onKey = (e) => e.key === "Escape" && setActive(null);
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    dialogRef.current?.querySelector("button")?.focus();
+    const onKey = (e) => {
+      if (e.key === "Escape") setActive(null);
+      if (e.key === "Tab") {
+        const items = dialogRef.current?.querySelectorAll("button, a[href]");
+        if (!items?.length) return;
+        const first = items[0], last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
+      previousFocus?.focus();
     };
   }, [active]);
 
   return (
     <section className="section" id="schedule">
       <div className="container">
-        <Reveal className="center" style={{ margin: "0 auto 56px" }}>
+        <Reveal className="section-heading">
           <p className="eyebrow" style={{ justifyContent: "center" }}>Расписание</p>
-          <h2 className="h2" style={{ marginTop: 18 }}>Цикл воркшопов по нейросетям</h2>
+          <h2 className="h2" style={{ marginTop: 18 }}>Один вечер. Новый навык.</h2>
           <p className="lead" style={{ marginTop: 16 }}>
-            Минск, Пространство «Молоко». Нажмите на карточку — откроются подробности.
+            Выберите задачу, которую хотите решить. На каждом воркшопе — практика и свой результат.
           </p>
         </Reveal>
 
@@ -43,11 +57,13 @@ export default function Schedule() {
             <Reveal
               key={wk.id}
               as="button"
-              className="sched-card glass"
+              className={`sched-card glass workshop-${i}`}
+              type="button"
               delay={i * 0.05}
               onClick={() => setActive(i)}
               aria-label={`${wk.title} — ${wk.date}`}
             >
+              <span className="workshop-category mono">{i === 0 ? "АВТОМАТИЗАЦИЯ" : i === 2 ? "ПРОДАЖИ" : "ВАЙБ-КОДИНГ"}</span>
               <span className="sched-num mono">{String(i + 1).padStart(2, "0")}</span>
               <span className="sched-date-badge mono">
                 {wk.date}
@@ -56,7 +72,7 @@ export default function Schedule() {
               <h3 className="sched-title">{wk.title}</h3>
               <p className="sched-tagline">{wk.tagline}</p>
               <span className="sched-more">
-                Подробнее <Arrow />
+                Программа воркшопа <Arrow />
               </span>
             </Reveal>
           ))}
@@ -67,7 +83,9 @@ export default function Schedule() {
         <div className="sched-modal" onClick={() => setActive(null)}>
           <div
             className="sched-dialog glass-strong"
+            ref={dialogRef}
             role="dialog"
+            aria-labelledby="workshop-title"
             aria-modal="true"
             onClick={(e) => e.stopPropagation()}
           >
@@ -78,7 +96,7 @@ export default function Schedule() {
               {w.date}
               <span>{w.weekday} · {w.time}</span>
             </span>
-            <h3 className="sched-dialog-title">{w.title}</h3>
+            <h3 id="workshop-title" className="sched-dialog-title">{w.title}</h3>
             <p className="sched-dialog-tagline">{w.tagline}</p>
             <p className="sched-desc">{w.desc}</p>
             <a

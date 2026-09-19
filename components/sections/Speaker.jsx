@@ -4,7 +4,7 @@ import { site } from "@/lib/config";
 
 export default function Speaker() {
   return (
-    <section className="section-flush">
+    <section className="section-flush" id="speaker">
       <div className="panel panel-blue">
         <div className="container">
           <div className="expert-grid">

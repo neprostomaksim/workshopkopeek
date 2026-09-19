@@ -1,98 +1,27 @@
-"use client";
-
 import { site } from "@/lib/config";
 
-const AV = [
-  { c: "var(--lime)", t: "М" },
-  { c: "#7FB8FF", t: "А" },
-  { c: "var(--amber)", t: "К" },
-];
-
 export default function Hero() {
-  const scrollTo = (id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.scrollTo({
-      top: el.getBoundingClientRect().top + (window.scrollY || 0) - 72,
-      behavior: reduce ? "auto" : "smooth",
-    });
-  };
-
   return (
-    <section className="hero">
-      <div className="hero-bg-wrap">
-        <img src="/hero-bg.jpg" alt="Атмосфера воркшопа" className="hero-bg-img" />
-        <div className="hero-bg-overlay" />
-        <div className="grid-bg hero-grid" />
-      </div>
-
-      <div
-        className="glow"
-        style={{
-          width: 640,
-          height: 640,
-          top: -160,
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "radial-gradient(circle,rgba(198,244,50,0.5),transparent 70%)",
-          animation: "glowPulse 7s ease-in-out infinite",
-        }}
-      />
-      <div
-        className="glow"
-        style={{
-          width: 560,
-          height: 560,
-          bottom: -180,
-          left: "6%",
-          background: "radial-gradient(circle,rgba(70,110,180,0.45),transparent 70%)",
-          opacity: 0.3,
-        }}
-      />
-
-      <div className="container center hero-inner">
-        <div className="pill glass">
-          <span className="pulse-dot" />
-          Сентябрь–октябрь · {site.venue}, {site.city}
-        </div>
-
-        <p className="eyebrow" style={{ justifyContent: "center" }}>
-          Практические воркшопы по ИИ для бизнеса
-        </p>
-
-        <h1 className="h1 hero-title">
-          Нейросети для бизнеса —
-          <br />
-          <span className="lime">руками, за один вечер</span>
-        </h1>
-
-        <p className="lead hero-lead">
-          Практические воркшопы: ИИ-агенты, вайб-кодинг и продажи. Без кода, на ваших реальных
-          задачах — уходите не с теорией, а с готовым результатом.
-        </p>
-
-        <div className="hero-btns">
-          <button type="button" className="btn btn-primary" onClick={() => scrollTo("schedule")}>
-            Смотреть расписание
-          </button>
-          <a className="btn btn-secondary" href={site.registerUrl} target="_blank" rel="noopener">
-            Записаться
-          </a>
-        </div>
-
-        <div className="proof glass">
-          <div className="avatars">
-            {AV.map((a, i) => (
-              <span key={i} className="avatar" style={{ background: a.c }}>
-                {a.t}
-              </span>
-            ))}
+    <section className="hero" id="top">
+      <div className="container">
+        <div className="hero-layout">
+          <div className="hero-copy">
+            <p className="eyebrow">ИИ для бизнеса · Практика в Минске</p>
+            <h1 className="hero-title">Меньше рутины.<br />Больше <span className="lime">возможностей.</span></h1>
+            <p className="lead hero-lead">Научитесь работать с нейросетями — и создайте своего ИИ-помощника, бота или первый продукт за один вечер.</p>
+            <div className="hero-btns">
+              <a className="btn btn-primary" href="#schedule">Выбрать воркшоп <span aria-hidden="true">↗</span></a>
+              <a className="hero-text-link" href="#atmosphere">Как это проходит <span aria-hidden="true">↘</span></a>
+            </div>
+            <div className="hero-proof"><img src="/speaker.jpg" alt="" /><p><strong>{site.trainedCount} человек уже прошли обучение</strong><span>Воркшопы с Максимом Леоновым</span></p></div>
           </div>
-          <span className="proof-text">
-            <b>{site.trainedCount} человек</b> уже прошли обучение у Максима Леонова
-          </span>
+          <div className="hero-visual">
+            <img className="hero-workshop-photo" src="/hero-bg.jpg" alt="Участники очного воркшопа работают с ноутбуками" fetchPriority="high" />
+            <div className="photo-label mono"><span className="pulse-dot" /> ОФЛАЙН. В ЖИВОМ ДИАЛОГЕ.</div>
+            <div className="hero-note"><span className="mono">ОТ ИДЕИ К РЕЗУЛЬТАТУ</span><strong>Вы ставите задачу.<br />ИИ помогает создавать.</strong><div className="note-bottom"><span>Ваш ноутбук. Ваши задачи.</span><span aria-hidden="true">↗</span></div></div>
+          </div>
         </div>
+        <div className="hero-facts"><div><span className="mono">01 / ФОРМАТ</span><strong>3 часа практики</strong></div><div><span className="mono">02 / ПОДХОД</span><strong>Без навыков кода</strong></div><div><span className="mono">03 / МЕСТО</span><strong>{site.city}, «Молоко»</strong></div><a href="#schedule"><span className="mono">СЕНТЯБРЬ — ОКТЯБРЬ 2026</span><strong>Найти свой вечер <span aria-hidden="true">↓</span></strong></a></div>
       </div>
     </section>
   );
