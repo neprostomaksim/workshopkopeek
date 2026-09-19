@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+// ID пикселя публичен и в любом случае виден в коде страницы.
+const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1415485604048699";
 
 function trackPageView() {
   if (typeof window.fbq === "function") window.fbq("track", "PageView");
