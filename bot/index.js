@@ -1,11 +1,22 @@
 import "dotenv/config";
 import { createServer } from "node:http";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { Bot, Keyboard, InputFile, InlineKeyboard, webhookCallback } from "grammy";
 import { createClient } from "@supabase/supabase-js";
 
-const { BOT_TOKEN, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ADMIN_CHAT_ID } = process.env;
+const {
+  BOT_TOKEN,
+  SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY,
+  ADMIN_CHAT_ID,
+  META_PIXEL_ID,
+  META_CONVERSIONS_API_TOKEN,
+  META_GRAPH_API_VERSION,
+  META_TEST_EVENT_CODE,
+  META_EVENT_SOURCE_URL,
+} = process.env;
 
 if (!BOT_TOKEN || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error(
@@ -179,6 +190,10 @@ async function saveLead(ctx, s, rawPhone) {
   );
   await sendPayment(ctx);
 
+  // Реальная конверсия: отправляем Lead только после успешного сохранения телефона.
+  // Ошибка Meta не должна мешать заявке или ответу бота.
+  void sendMetaLead({ from, phone, name: s.name, workshopLabel });
+
   // Уведомление организатору о новой заявке.
   const when = new Date().toLocaleString("ru-RU", { timeZone: "Europe/Minsk" });
   await notifyAdmin(
@@ -189,6 +204,61 @@ async function saveLead(ctx, s, rawPhone) {
       `🔗 Telegram: ${from.username ? "@" + from.username : "—"}\n` +
       `🕐 ${when}`
   );
+}
+
+function sha256(value) {
+  return createHash("sha256").update(String(value).trim().toLowerCase()).digest("hex");
+}
+
+function normalizePhoneForMeta(value) {
+  const digits = String(value).replace(/\D/g, "");
+  if (digits.length === 9) return `375${digits}`;
+  if (digits.length === 11 && digits.startsWith("80")) return `375${digits.slice(2)}`;
+  return digits;
+}
+
+async function sendMetaLead({ from, phone, name, workshopLabel }) {
+  if (!META_PIXEL_ID || !META_CONVERSIONS_API_TOKEN) return;
+
+  const version = META_GRAPH_API_VERSION ? `${META_GRAPH_API_VERSION.replace(/^\/+|\/+$/g, "")}/` : "";
+  const endpoint = new URL(`https://graph.facebook.com/${version}${META_PIXEL_ID}/events`);
+  endpoint.searchParams.set("access_token", META_CONVERSIONS_API_TOKEN);
+  const event = {
+    event_name: "Lead",
+    event_time: Math.floor(Date.now() / 1000),
+    action_source: "chat",
+    event_source_url: META_EVENT_SOURCE_URL || "https://workshopkopeek.vercel.app/",
+    user_data: {
+      ph: [sha256(normalizePhoneForMeta(phone))],
+      fn: name ? [sha256(name)] : undefined,
+      external_id: from.id ? [sha256(from.id)] : undefined,
+    },
+    custom_data: {
+      content_name: workshopLabel,
+      content_category: "workshop",
+      currency: "BYN",
+      value: 130,
+    },
+  };
+
+  try {
+    const body = { data: [event] };
+    if (META_TEST_EVENT_CODE) body.test_event_code = META_TEST_EVENT_CODE;
+
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!response.ok) {
+      const message = await response.text();
+      console.error("Meta CAPI error:", response.status, message.slice(0, 500));
+    }
+  } catch (error) {
+    console.error("Meta CAPI request error:", error.message || error);
+  }
 }
 
 // Шлём организатору сообщение, если задан ADMIN_CHAT_ID. Ошибка тут не ломает запись клиента.

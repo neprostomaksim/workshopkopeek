@@ -63,6 +63,26 @@ Telegram разрешает только один polling на токен (ин�
 Смотреть заявки: Supabase → **Table Editor → workshop_leads**.
 Поле `source` показывает, с какого лендинга пришла заявка (метка из `?start=`).
 
+## Meta Pixel и Conversions API
+
+Лендинг отправляет в Meta событие `PageView` и событие `Contact` при переходе в Telegram.
+Бот отправляет серверное событие `Lead` только после того, как телефон успешно сохранён в Supabase.
+
+В Vercel добавьте переменную окружения:
+
+- `NEXT_PUBLIC_META_PIXEL_ID` — ID пикселя из Meta Events Manager.
+
+В Render добавьте переменные окружения:
+
+- `META_PIXEL_ID` — тот же ID пикселя;
+- `META_CONVERSIONS_API_TOKEN` — токен из Events Manager → Settings → Conversions API;
+- `META_EVENT_SOURCE_URL` — публичный URL лендинга;
+- `META_TEST_EVENT_CODE` — временный код из Test events для проверки, затем его нужно удалить;
+- `META_GRAPH_API_VERSION` — необязательно, например `v26.0`.
+
+Телефон, имя и Telegram ID перед отправкой хешируются SHA-256. Токен Conversions API хранится
+только в Render и никогда не попадает в браузер или git.
+
 ## Уведомления о заявках
 
 Бот присылает организатору сообщение при каждой новой заявке (имя, телефон, ник, источник, время).

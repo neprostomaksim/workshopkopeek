@@ -1,6 +1,7 @@
 import { Montserrat, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Analytics from "../components/Analytics";
+import MetaPixel from "../components/MetaPixel";
 
 const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
@@ -41,6 +42,7 @@ export default function RootLayout({ children }) {
       <body>
         {children}
         <Analytics site="workshopkopeek" />
+        <MetaPixel />
       </body>
     </html>
   );

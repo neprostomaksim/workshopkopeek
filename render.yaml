@@ -20,3 +20,13 @@ services:
         sync: false
       - key: ADMIN_CHAT_ID
         sync: false
+      - key: META_PIXEL_ID
+        sync: false
+      - key: META_CONVERSIONS_API_TOKEN
+        sync: false
+      - key: META_GRAPH_API_VERSION
+        sync: false
+      - key: META_TEST_EVENT_CODE
+        sync: false
+      - key: META_EVENT_SOURCE_URL
+        sync: false
