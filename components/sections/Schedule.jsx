@@ -12,10 +12,25 @@ const Arrow = () => (
   </svg>
 );
 
+function findNextWorkshopId() {
+  const now = Date.now();
+  return workshops
+    .filter((workshop) => new Date(workshop.startsAt).getTime() > now)
+    .sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt))[0]?.id || null;
+}
+
 export default function Schedule() {
   const dialogRef = useRef(null);
   const [active, setActive] = useState(null);
+  const [nextWorkshopId, setNextWorkshopId] = useState(null);
   const w = active != null ? workshops[active] : null;
+
+  useEffect(() => {
+    const updateNextWorkshop = () => setNextWorkshopId(findNextWorkshopId());
+    updateNextWorkshop();
+    const timer = window.setInterval(updateNextWorkshop, 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (active == null) return;
@@ -53,29 +68,35 @@ export default function Schedule() {
         </Reveal>
 
         <div className="sched-grid">
-          {workshops.map((wk, i) => (
-            <Reveal
-              key={wk.id}
-              as="button"
-              className={`sched-card glass workshop-${i}`}
-              type="button"
-              delay={i * 0.05}
-              onClick={() => setActive(i)}
-              aria-label={`${wk.title} — ${wk.date}`}
-            >
-              <span className="workshop-category mono">{i === 0 ? "АВТОМАТИЗАЦИЯ" : i === 2 ? "ПРОДАЖИ" : "ВАЙБ-КОДИНГ"}</span>
-              <span className="sched-num mono">{String(i + 1).padStart(2, "0")}</span>
-              <span className="sched-date-badge mono">
-                {wk.date}
-                <span>{wk.weekday} · {wk.time}</span>
-              </span>
-              <h3 className="sched-title">{wk.title}</h3>
-              <p className="sched-tagline">{wk.tagline}</p>
-              <span className="sched-more">
-                Программа воркшопа <Arrow />
-              </span>
-            </Reveal>
-          ))}
+          {workshops.map((wk, i) => {
+            const isNearest = wk.id === nextWorkshopId;
+            return (
+              <Reveal
+                key={wk.id}
+                as="button"
+                className={`sched-card glass ${isNearest ? "is-nearest" : ""}`}
+                type="button"
+                delay={i * 0.05}
+                onClick={() => setActive(i)}
+                aria-label={`${wk.title} — ${wk.date}${isNearest ? " — ближайший воркшоп" : ""}`}
+              >
+                <span className="workshop-topline">
+                  <span className="workshop-category mono">{wk.category}</span>
+                  {isNearest && <span className="nearest-badge mono">Ближайший</span>}
+                </span>
+                <span className="sched-num mono">{String(i + 1).padStart(2, "0")}</span>
+                <span className="sched-date-badge mono">
+                  {wk.date}
+                  <span>{wk.weekday} · {wk.time}</span>
+                </span>
+                <h3 className="sched-title">{wk.title}</h3>
+                <p className="sched-tagline">{wk.tagline}</p>
+                <span className="sched-more">
+                  Программа воркшопа <Arrow />
+                </span>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
 
