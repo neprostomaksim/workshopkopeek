@@ -18,7 +18,7 @@ export default function Gallery() {
         <div className="gallery">
           {PHOTOS.map((src, i) => (
             <Reveal key={src} className="gallery-item" delay={(i % 3) * 0.06}>
-              <img src={`/gallery/${src}`} alt="Атмосфера воркшопа Максима Леонова" loading="lazy" />
+              <img src={`/gallery/${src}`} alt={`Участники практического воркшопа по ИИ в Минске — фото ${i + 1}`} width="1200" height="1600" loading="lazy" />
             </Reveal>
           ))}
         </div>

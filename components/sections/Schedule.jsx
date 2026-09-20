@@ -74,6 +74,7 @@ export default function Schedule() {
               <Reveal
                 key={wk.id}
                 as="button"
+                id={wk.id}
                 className={`sched-card glass ${isNearest ? "is-nearest" : ""}`}
                 type="button"
                 delay={i * 0.05}

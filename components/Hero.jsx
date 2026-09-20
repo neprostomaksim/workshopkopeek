@@ -8,7 +8,7 @@ export default function Hero() {
           <div className="hero-copy">
             <p className="eyebrow">ИИ для бизнеса · Практика в Минске</p>
             <h1 className="hero-title">Меньше рутины.<br />Больше <span className="lime">возможностей.</span></h1>
-            <p className="lead hero-lead">Научитесь работать с нейросетями — и создайте своего ИИ-помощника, бота или первый продукт за один вечер.</p>
+            <p className="lead hero-lead">Практические воркшопы по ИИ в Минске: научитесь работать с нейросетями и создайте своего ИИ-помощника, бота или первый продукт за один вечер.</p>
             <div className="hero-btns">
               <a className="btn btn-primary" href="#schedule">Выбрать воркшоп <span aria-hidden="true">↗</span></a>
               <a className="hero-text-link" href="#atmosphere">Как это проходит <span aria-hidden="true">↘</span></a>
@@ -16,7 +16,7 @@ export default function Hero() {
             <div className="hero-proof"><img src="/speaker.jpg" alt="" /><p><strong>{site.trainedCount} человек уже прошли обучение</strong><span>Воркшопы с Максимом Леоновым</span></p></div>
           </div>
           <div className="hero-visual">
-            <img className="hero-workshop-photo" src="/hero-bg.jpg" alt="Участники очного воркшопа работают с ноутбуками" fetchPriority="high" />
+            <img className="hero-workshop-photo" src="/hero-bg.jpg" alt="Участники практического воркшопа по ИИ в Минске работают с ноутбуками" width="1024" height="571" fetchPriority="high" />
             <div className="photo-label mono"><span className="pulse-dot" /> ОФЛАЙН. В ЖИВОМ ДИАЛОГЕ.</div>
             <div className="hero-note"><span className="mono">ОТ ИДЕИ К РЕЗУЛЬТАТУ</span><strong>Вы ставите задачу.<br />ИИ помогает создавать.</strong><div className="note-bottom"><span>Ваш ноутбук. Ваши задачи.</span><span aria-hidden="true">↗</span></div></div>
           </div>

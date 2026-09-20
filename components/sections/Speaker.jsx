@@ -9,7 +9,7 @@ export default function Speaker() {
         <div className="container">
           <div className="expert-grid">
             <Reveal className="photo-frame">
-              <img src="/speaker.jpg" alt="Максим Леонов" className="speaker-photo" />
+              <img src="/speaker.jpg" alt="Максим Леонов — AI-эксперт и ведущий воркшопов" className="speaker-photo" width="667" height="931" loading="lazy" />
             </Reveal>
 
             <Reveal delay={0.1}>
