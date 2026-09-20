@@ -3,8 +3,8 @@
 import Script from "next/script";
 import { useEffect } from "react";
 
-const GOOGLE_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
-const YANDEX_ID = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID;
+const GOOGLE_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || "G-ZZQZHVHXW4";
+const YANDEX_ID = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || "112832087";
 
 export default function MarketingAnalytics() {
   useEffect(() => {
