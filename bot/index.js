@@ -58,15 +58,18 @@ const WORKSHOPS = [
   { id: "vibe-coding-20-10", date: "20 октября", title: "Вайб-кодинг для предпринимателей" },
 ];
 const workshopById = (id) => WORKSHOPS.find((w) => w.id === id) || null;
-function workshopKeyboard() {
+function workshopKeyboard(excludeWorkshopId) {
   const kb = new InlineKeyboard();
-  for (const w of WORKSHOPS) kb.text(`${w.date} — ${w.title}`, `w:${w.id}`).row();
+  for (const w of WORKSHOPS) {
+    if (w.id !== excludeWorkshopId) kb.text(`${w.date} — ${w.title}`, `w:${w.id}`).row();
+  }
   return kb;
 }
 
 bot.command("start", async (ctx) => {
   // ?start=... из ссылки лендинга — метка источника (для статистики).
   const source = (ctx.match || "").trim() || DEFAULT_SOURCE;
+  if (source.startsWith("lead_") && (await continueWebsiteLead(ctx, source))) return;
   sessions.set(ctx.chat.id, { step: "pick", source });
   logStart(ctx, source); // фиксируем вход в бота (для статистики), не блокируя ответ
   await ctx.reply(
@@ -97,6 +100,21 @@ bot.on("callback_query:data", async (ctx) => {
   if (!w) return void ctx.answerCallbackQuery({ text: "Воркшоп не найден" });
 
   const prev = sessions.get(ctx.chat.id) || {};
+  if (prev.step === "additional_pick" && prev.name && prev.phone) {
+    sessions.set(ctx.chat.id, {
+      step: "phone",
+      source: "telegram-repeat",
+      workshop: w,
+      name: prev.name,
+    });
+    await ctx.answerCallbackQuery();
+    try {
+      await ctx.editMessageText(`✅ Ещё один воркшоп: ${w.title}\n🗓 ${w.date} · ${VENUE}`);
+    } catch (_) {}
+    await saveLead(ctx, { name: prev.name, workshop: w, source: "telegram-repeat" }, prev.phone);
+    return;
+  }
+
   sessions.set(ctx.chat.id, { step: "name", source: prev.source || DEFAULT_SOURCE, workshop: w });
   await ctx.answerCallbackQuery();
   try {
@@ -205,6 +223,72 @@ async function saveLead(ctx, s, rawPhone) {
       `🔗 Telegram: ${from.username ? "@" + from.username : "—"}\n` +
       `🕐 ${when}`
   );
+}
+
+// Заявка уже создана на сайте. В start-параметре только одноразовый токен —
+// имя и телефон никогда не передаются в ссылке Telegram.
+async function continueWebsiteLead(ctx, token) {
+  const { data: lead, error } = await supabase
+    .from("workshop_leads")
+    .select("id,name,phone,source,workshop_id")
+    .eq("registration_token", token)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Website lead lookup error:", error.message || error);
+    return false;
+  }
+  if (!lead) return false;
+
+  const from = ctx.from || {};
+  const workshop = workshopById(lead.workshop_id);
+  const workshopLabel = workshop ? `${workshop.title} · ${workshop.date}` : lead.source;
+  const now = new Date().toISOString();
+  const { error: updateError } = await supabase
+    .from("workshop_leads")
+    .update({
+      tg_user_id: from.id ?? null,
+      tg_username: from.username ?? null,
+      registration_token: null,
+      status: "payment_link_sent",
+      bot_started_at: now,
+      payment_link_sent_at: now,
+    })
+    .eq("id", lead.id);
+
+  if (updateError) {
+    console.error("Website lead Telegram handoff error:", updateError.message || updateError);
+    await ctx.reply("Не получилось открыть вашу запись. Пожалуйста, напишите нам — поможем.");
+    return true;
+  }
+
+  await ctx.reply(
+    `Здравствуйте, ${lead.name}! ✅\n\n` +
+      `Вы записаны на «${workshopLabel}».\n\n` +
+      "Ниже — ссылка на оплату. После оплаты пришлём детали участия.",
+    { reply_markup: { remove_keyboard: true } }
+  );
+  await sendPayment(ctx);
+
+  await notifyAdmin(
+    "🔔 Заявка перешла в Telegram\n\n" +
+      `🎓 Воркшоп: ${workshopLabel}\n` +
+      `👤 Имя: ${lead.name}\n` +
+      `📞 Телефон: ${lead.phone}\n` +
+      "💳 Ссылка на оплату отправлена"
+  );
+
+  if (WORKSHOPS.some((item) => item.id !== workshop?.id)) {
+    sessions.set(ctx.chat.id, {
+      step: "additional_pick",
+      name: lead.name,
+      phone: lead.phone,
+    });
+    await ctx.reply("Хотите записаться ещё на другой воркшоп?", {
+      reply_markup: workshopKeyboard(workshop?.id),
+    });
+  }
+  return true;
 }
 
 function sha256(value) {

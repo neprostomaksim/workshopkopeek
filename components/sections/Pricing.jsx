@@ -1,6 +1,7 @@
 import Reveal from "../Reveal";
 import { Icon } from "../icons";
 import { site } from "@/lib/config";
+import RegistrationForm from "../RegistrationForm";
 
 export default function Pricing() {
   const taken = site.seatsTotal - site.seatsLeft;
@@ -31,7 +32,7 @@ export default function Pricing() {
             Осталось {site.seatsLeft} места из {site.seatsTotal}
           </div>
           <h2 style={{ fontSize: "clamp(26px,3.4vw,34px)", margin: "22px 0 24px" }}>
-            Интенсив «Вайб-кодинг за 3 часа»
+            Запишитесь на воркшоп
           </h2>
 
           <div>
@@ -56,18 +57,7 @@ export default function Pricing() {
           <div className="divider" />
           <div className="price-num mono">{site.price}</div>
 
-          <a
-            className="btn btn-primary"
-            href={site.registerUrl}
-            target="_blank"
-            rel="noopener"
-            style={{ width: "100%", marginTop: 26, fontSize: 17, padding: 17 }}
-          >
-            Записаться на воркшоп
-          </a>
-          <p className="dim center" style={{ fontSize: 14, marginTop: 16 }}>
-            Бот попросит имя и телефон — и пришлёт детали оплаты.
-          </p>
+          <RegistrationForm />
         </Reveal>
       </div>
     </section>

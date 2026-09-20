@@ -29,6 +29,17 @@ npm run build && npm start
 - Ссылки `paymentUrl`, `telegramUrl`, `contactUrl` пока `"#"` — замените на реальные.
 - `seatsLeft` / `seatsTotal` — управляют бейджем срочности и прогресс-баром.
 
+## Заявки с сайта и Telegram
+
+Форма в блоке цены сохраняет имя и телефон в Supabase, отправляет `Lead` в Meta Pixel/CAPI и
+открывает Telegram-бота с одноразовым токеном. Бот повторно данные не спрашивает: подтверждает
+выбранный воркшоп и присылает оплату.
+
+Перед первым запуском выполните [`supabase/workshop_leads.sql`](supabase/workshop_leads.sql) в
+Supabase SQL Editor. В Vercel задайте серверные переменные `SUPABASE_URL`,
+`SUPABASE_SERVICE_ROLE_KEY`, `META_PIXEL_ID`, `META_CONVERSIONS_API_TOKEN` и
+`META_EVENT_SOURCE_URL`; пример есть в `.env.example`.
+
 ## Изображения (плейсхолдеры → реальные фото)
 
 Компонент `components/ImageSlot.jsx` рисует заглушки в двух местах:

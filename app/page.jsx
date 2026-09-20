@@ -5,6 +5,7 @@ import Gallery from "@/components/sections/Gallery";
 import Speaker from "@/components/sections/Speaker";
 import Faq from "@/components/sections/Faq";
 import Footer from "@/components/sections/Footer";
+import Pricing from "@/components/sections/Pricing";
 
 export default function Page() {
   return (
@@ -13,6 +14,7 @@ export default function Page() {
       <main>
         <Hero />
         <Schedule />
+        <Pricing />
         <Speaker />
         <Gallery />
         <Faq />

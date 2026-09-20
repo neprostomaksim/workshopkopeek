@@ -123,12 +123,14 @@ export default function Schedule() {
             <p className="sched-desc">{w.desc}</p>
             <a
               className="btn btn-primary"
-              href={site.registerUrl}
-              target="_blank"
-              rel="noopener"
+              href="#register"
               style={{ marginTop: 26, width: "100%" }}
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("workshop:choose", { detail: w.id }));
+                setActive(null);
+              }}
             >
-              Записаться
+              Выбрать и записаться
             </a>
           </div>
         </div>

@@ -13,8 +13,7 @@ Supabase → **SQL Editor** → выполните файл [`../supabase/worksh
 
 1. В Telegram напишите [@BotFather](https://t.me/BotFather) → `/newbot` → задайте имя и @username.
 2. Скопируйте **токен**.
-3. Впишите @username бота в `lib/config.js` лендинга:
-   `registerUrl: "https://t.me/ВАШ_БОТ?start=vibecoding"`.
+3. Проверьте @username бота в `BOT_URL` серверного маршрута `app/api/leads/route.js`.
 
 ## 3. Настроить и запустить
 
@@ -65,12 +64,19 @@ Telegram разрешает только один polling на токен (ин�
 
 ## Meta Pixel и Conversions API
 
-Лендинг отправляет в Meta событие `PageView` и событие `Contact` при переходе в Telegram.
-Бот отправляет серверное событие `Lead` только после того, как телефон успешно сохранён в Supabase.
+Лендинг сохраняет имя и телефон в Supabase, после чего отправляет событие `Lead` в Meta Pixel
+и Conversions API. Затем посетитель открывает Telegram по одноразовой ссылке: бот находит его
+заявку, не спрашивает контакты повторно и отправляет ссылку на оплату.
 
-В Vercel добавьте переменную окружения:
+Перед первым деплоем выполните актуальный [`../supabase/workshop_leads.sql`](../supabase/workshop_leads.sql)
+в Supabase SQL Editor — он добавляет токен передачи, статусы и UTM-поля к уже существующей таблице.
+
+В Vercel добавьте серверные переменные окружения:
 
 - `NEXT_PUBLIC_META_PIXEL_ID` — ID пикселя из Meta Events Manager.
+- `SUPABASE_URL` и `SUPABASE_SERVICE_ROLE_KEY` — для серверного `/api/leads`; они не попадают в браузер;
+- `META_PIXEL_ID`, `META_CONVERSIONS_API_TOKEN`, `META_EVENT_SOURCE_URL` — для Conversions API;
+- `META_TEST_EVENT_CODE` — только на время проверки во вкладке Test events.
 
 В Render добавьте переменные окружения:
 
@@ -80,8 +86,9 @@ Telegram разрешает только один polling на токен (ин�
 - `META_TEST_EVENT_CODE` — временный код из Test events для проверки, затем его нужно удалить;
 - `META_GRAPH_API_VERSION` — необязательно, например `v26.0`.
 
-Телефон, имя и Telegram ID перед отправкой хешируются SHA-256. Токен Conversions API хранится
-только в Render и никогда не попадает в браузер или git.
+Телефон, имя и Telegram ID перед отправкой в Meta хешируются SHA-256. Одноразовый токен в
+Telegram-ссылке не содержит персональных данных. Секреты хранятся только в Vercel/Render и никогда
+не попадают в браузер или git.
 
 ## Уведомления о заявках
 
