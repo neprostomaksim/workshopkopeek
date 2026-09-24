@@ -48,9 +48,9 @@ export default function MarketingAnalytics() {
       loadAnalytics();
     };
     const scheduleLoad = () => {
-      idleId = window.requestIdleCallback
-        ? window.requestIdleCallback(loadNow, { timeout: 2000 })
-        : window.setTimeout(loadNow, 1200);
+      // Не конкурируем с отрисовкой первого экрана. Любое действие пользователя
+      // загружает аналитику немедленно, а вызовы до загрузки уже стоят в очереди.
+      idleId = window.setTimeout(loadNow, 4000);
     };
 
     if (document.readyState === "complete") scheduleLoad();
@@ -86,8 +86,7 @@ export default function MarketingAnalytics() {
       window.removeEventListener("pointerdown", loadNow);
       window.removeEventListener("keydown", loadNow);
       if (idleId !== undefined) {
-        if (window.cancelIdleCallback) window.cancelIdleCallback(idleId);
-        else window.clearTimeout(idleId);
+        window.clearTimeout(idleId);
       }
     };
   }, []);
