@@ -40,9 +40,23 @@ export default function MarketingAnalytics() {
       if (YANDEX_ID) loadScript("yandex-metrika-script", "https://mc.yandex.ru/metrika/tag.js");
     };
 
-    const idleId = window.requestIdleCallback
-      ? window.requestIdleCallback(loadAnalytics, { timeout: 2500 })
-      : window.setTimeout(loadAnalytics, 1800);
+    let idleId;
+    let scriptsLoaded = false;
+    const loadNow = () => {
+      if (scriptsLoaded) return;
+      scriptsLoaded = true;
+      loadAnalytics();
+    };
+    const scheduleLoad = () => {
+      idleId = window.requestIdleCallback
+        ? window.requestIdleCallback(loadNow, { timeout: 2000 })
+        : window.setTimeout(loadNow, 1200);
+    };
+
+    if (document.readyState === "complete") scheduleLoad();
+    else window.addEventListener("load", scheduleLoad, { once: true });
+    window.addEventListener("pointerdown", loadNow, { once: true, passive: true });
+    window.addEventListener("keydown", loadNow, { once: true });
 
     const trackClick = (event) => {
       const target = event.target.closest?.("[data-analytics-event], a[href]");
@@ -68,8 +82,13 @@ export default function MarketingAnalytics() {
     document.addEventListener("click", trackClick);
     return () => {
       document.removeEventListener("click", trackClick);
-      if (window.cancelIdleCallback && typeof idleId === "number") window.cancelIdleCallback(idleId);
-      else window.clearTimeout(idleId);
+      window.removeEventListener("load", scheduleLoad);
+      window.removeEventListener("pointerdown", loadNow);
+      window.removeEventListener("keydown", loadNow);
+      if (idleId !== undefined) {
+        if (window.cancelIdleCallback) window.cancelIdleCallback(idleId);
+        else window.clearTimeout(idleId);
+      }
     };
   }, []);
 

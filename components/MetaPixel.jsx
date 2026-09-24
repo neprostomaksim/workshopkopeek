@@ -38,13 +38,32 @@ export default function MetaPixel() {
       document.head.appendChild(script);
     };
 
-    const idleId = window.requestIdleCallback
-      ? window.requestIdleCallback(loadPixel, { timeout: 2500 })
-      : window.setTimeout(loadPixel, 1800);
+    let idleId;
+    let scriptLoaded = false;
+    const loadNow = () => {
+      if (scriptLoaded) return;
+      scriptLoaded = true;
+      loadPixel();
+    };
+    const scheduleLoad = () => {
+      idleId = window.requestIdleCallback
+        ? window.requestIdleCallback(loadNow, { timeout: 2000 })
+        : window.setTimeout(loadNow, 1200);
+    };
+
+    if (document.readyState === "complete") scheduleLoad();
+    else window.addEventListener("load", scheduleLoad, { once: true });
+    window.addEventListener("pointerdown", loadNow, { once: true, passive: true });
+    window.addEventListener("keydown", loadNow, { once: true });
 
     return () => {
-      if (window.cancelIdleCallback && typeof idleId === "number") window.cancelIdleCallback(idleId);
-      else window.clearTimeout(idleId);
+      window.removeEventListener("load", scheduleLoad);
+      window.removeEventListener("pointerdown", loadNow);
+      window.removeEventListener("keydown", loadNow);
+      if (idleId !== undefined) {
+        if (window.cancelIdleCallback) window.cancelIdleCallback(idleId);
+        else window.clearTimeout(idleId);
+      }
     };
   }, []);
 
@@ -69,17 +88,5 @@ export default function MetaPixel() {
     return () => document.removeEventListener("click", onClick);
   }, []);
 
-  if (!PIXEL_ID) return null;
-
-  return (
-    <noscript>
-      <img
-        height="1"
-        width="1"
-        style={{ display: "none" }}
-        src={`https://www.facebook.com/tr?id=${PIXEL_ID}&ev=PageView&noscript=1`}
-        alt=""
-      />
-    </noscript>
-  );
+  return null;
 }
