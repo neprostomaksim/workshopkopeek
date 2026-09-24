@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Reveal from "../Reveal";
 
 // Фото лежат в public/gallery. Порядок подобран под masonry (чередование ориентаций).
@@ -18,7 +19,7 @@ export default function Gallery() {
         <div className="gallery">
           {PHOTOS.map((src, i) => (
             <Reveal key={src} className="gallery-item" delay={(i % 3) * 0.06}>
-              <img src={`/gallery/${src}`} alt={`Участники практического воркшопа по ИИ в Минске — фото ${i + 1}`} width="1200" height="1600" loading="lazy" />
+              <Image src={`/gallery/${src}`} alt={`Участники практического воркшопа по ИИ в Минске — фото ${i + 1}`} width={1200} height={1600} sizes="(max-width: 767px) calc(100vw - 40px), 33vw" quality={72} />
             </Reveal>
           ))}
         </div>

@@ -1,4 +1,6 @@
 import { Montserrat, JetBrains_Mono } from "next/font/google";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import Analytics from "../components/Analytics";
 import MarketingAnalytics from "../components/MarketingAnalytics";
@@ -93,6 +95,8 @@ export default function RootLayout({ children }) {
         <Analytics site="workshopkopeek" />
         <MarketingAnalytics />
         <MetaPixel />
+        <VercelAnalytics />
+        <SpeedInsights />
       </body>
     </html>
   );

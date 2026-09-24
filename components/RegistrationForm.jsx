@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { workshops } from "@/lib/workshops";
 import { site } from "@/lib/config";
+import { trackMarketingEvent } from "@/lib/marketingAnalytics";
 
 const PRIMARY_WORKSHOP_ID = "ai-agents-29-09";
 
@@ -32,6 +33,8 @@ function getAttribution() {
 }
 
 export default function RegistrationForm() {
+  const formRef = useRef(null);
+  const formStarted = useRef(false);
   const [workshopId, setWorkshopId] = useState(PRIMARY_WORKSHOP_ID);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -55,10 +58,39 @@ export default function RegistrationForm() {
     return () => window.removeEventListener("workshop:choose", selectWorkshop);
   }, []);
 
+  useEffect(() => {
+    if (!formRef.current || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      trackMarketingEvent("form_viewed", { form_id: "workshop_registration" });
+      observer.disconnect();
+    }, { threshold: 0.35 });
+    observer.observe(formRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  function markFormStarted() {
+    if (formStarted.current) return;
+    formStarted.current = true;
+    trackMarketingEvent("form_started", {
+      form_id: "workshop_registration",
+      workshop_id: workshop.id,
+    });
+  }
+
   async function submit(event) {
     event.preventDefault();
     setError("");
     setIsSubmitting(true);
+
+    const attribution = getAttribution();
+    trackMarketingEvent("form_submit_attempted", {
+      form_id: "workshop_registration",
+      workshop_id: workshop.id,
+      utm_source: attribution.utm_source,
+      utm_campaign: attribution.utm_campaign,
+      utm_content: attribution.utm_content,
+    });
 
     const eventId = window.crypto?.randomUUID?.() || `lead_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     try {
@@ -70,7 +102,7 @@ export default function RegistrationForm() {
           phone,
           workshopId: workshop.id,
           eventId,
-          ...getAttribution(),
+          ...attribution,
         }),
       });
       const result = await response.json();
@@ -88,15 +120,31 @@ export default function RegistrationForm() {
         { eventID: eventId }
       );
 
+      trackMarketingEvent("lead_created", {
+        form_id: "workshop_registration",
+        workshop_id: workshop.id,
+        utm_source: attribution.utm_source,
+        utm_campaign: attribution.utm_campaign,
+        utm_content: attribution.utm_content,
+      }, { meta: false });
+      trackMarketingEvent("telegram_handoff_started", {
+        workshop_id: workshop.id,
+      });
+
       window.location.assign(result.telegramUrl);
     } catch (submitError) {
+      trackMarketingEvent("form_submit_failed", {
+        form_id: "workshop_registration",
+        workshop_id: workshop.id,
+        error_type: "request_failed",
+      });
       setError(submitError.message || "Не удалось отправить форму. Попробуйте ещё раз.");
       setIsSubmitting(false);
     }
   }
 
   return (
-    <form className="lead-form" id="register" onSubmit={submit}>
+    <form ref={formRef} className="lead-form" id="register" onSubmit={submit} onInput={markFormStarted}>
       <p className="lead-form-intro">
         Оставьте контакты — в Telegram подтвердим запись и пришлём ссылку на оплату.
       </p>

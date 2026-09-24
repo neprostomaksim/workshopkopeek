@@ -69,7 +69,10 @@ function workshopKeyboard(excludeWorkshopId) {
 bot.command("start", async (ctx) => {
   // ?start=... из ссылки лендинга — метка источника (для статистики).
   const source = (ctx.match || "").trim() || DEFAULT_SOURCE;
-  if (source.startsWith("lead_") && (await continueWebsiteLead(ctx, source))) return;
+  if (source.startsWith("lead_") && (await continueWebsiteLead(ctx, source))) {
+    logStart(ctx, "website-lead");
+    return;
+  }
   sessions.set(ctx.chat.id, { step: "pick", source });
   logStart(ctx, source); // фиксируем вход в бота (для статистики), не блокируя ответ
   await ctx.reply(
@@ -183,10 +186,15 @@ async function saveLead(ctx, s, rawPhone) {
   const w = s.workshop;
   const workshopLabel = w ? `${w.title} · ${w.date}` : s.source;
 
+  const now = new Date().toISOString();
   const { error } = await supabase.from("workshop_leads").insert({
     name: s.name,
     phone,
-    source: workshopLabel, // какой воркшоп выбрал участник
+    source: s.source || "telegram",
+    workshop_id: w?.id ?? null,
+    status: "payment_link_sent",
+    bot_started_at: now,
+    payment_link_sent_at: now,
     tg_user_id: from.id ?? null,
     tg_username: from.username ?? null,
   });
@@ -211,7 +219,9 @@ async function saveLead(ctx, s, rawPhone) {
 
   // Реальная конверсия: отправляем Lead только после успешного сохранения телефона.
   // Ошибка Meta не должна мешать заявке или ответу бота.
-  void sendMetaLead({ from, phone, name: s.name, workshopLabel });
+  if (s.source !== "telegram-repeat") {
+    void sendMetaLead({ from, phone, name: s.name, workshopLabel });
+  }
 
   // Уведомление организатору о новой заявке.
   const when = new Date().toLocaleString("ru-RU", { timeZone: "Europe/Minsk" });

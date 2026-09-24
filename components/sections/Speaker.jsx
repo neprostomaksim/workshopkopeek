@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Reveal from "../Reveal";
 import { Icon } from "../icons";
 import { site } from "@/lib/config";
@@ -9,7 +10,7 @@ export default function Speaker() {
         <div className="container">
           <div className="expert-grid">
             <Reveal className="photo-frame">
-              <img src="/speaker.jpg" alt="Максим Леонов — AI-эксперт и ведущий воркшопов" className="speaker-photo" width="667" height="931" loading="lazy" />
+              <Image src="/speaker.jpg" alt="Максим Леонов — AI-эксперт и ведущий воркшопов" className="speaker-photo" width={667} height={931} sizes="(max-width: 767px) calc(100vw - 40px), 420px" quality={74} />
             </Reveal>
 
             <Reveal delay={0.1}>

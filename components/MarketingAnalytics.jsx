@@ -1,81 +1,77 @@
 "use client";
 
-import Script from "next/script";
 import { useEffect } from "react";
+import { trackMarketingEvent } from "@/lib/marketingAnalytics";
 
 const GOOGLE_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || "G-ZZQZHVHXW4";
 const YANDEX_ID = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || "112832087";
 
 export default function MarketingAnalytics() {
   useEffect(() => {
-    if (!GOOGLE_ID && !YANDEX_ID) return;
+    if (GOOGLE_ID) {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function gtag() { window.dataLayer.push(arguments); };
+      window.gtag("js", new Date());
+      window.gtag("config", GOOGLE_ID, { anonymize_ip: true });
+    }
 
-    const trackTelegramClick = (event) => {
-      const link = event.target.closest?.('a[href*="t.me/nempl_workshop_kop_bot"]');
-      if (!link) return;
+    if (YANDEX_ID) {
+      window.ym = window.ym || function ym() { (window.ym.a = window.ym.a || []).push(arguments); };
+      window.ym.l = window.ym.l || Date.now();
+      window.ym(Number(YANDEX_ID), "init", {
+        clickmap: true,
+        trackLinks: true,
+        accurateTrackBounce: true,
+        webvisor: true,
+      });
+    }
 
-      const properties = {
-        method: "telegram",
-        cta_text: link.textContent?.trim().slice(0, 80) || "telegram",
-        cta_location:
-          link.closest("section")?.id ||
-          link.closest("header, footer")?.tagName.toLowerCase() ||
-          "page",
-      };
-
-      if (GOOGLE_ID && typeof window.gtag === "function") {
-        window.gtag("event", "telegram_registration_clicked", properties);
-      }
-      if (YANDEX_ID && typeof window.ym === "function") {
-        window.ym(Number(YANDEX_ID), "reachGoal", "telegram_registration_clicked", properties);
-      }
+    const loadScript = (id, src) => {
+      if (document.getElementById(id)) return;
+      const script = document.createElement("script");
+      script.id = id;
+      script.async = true;
+      script.src = src;
+      document.head.appendChild(script);
     };
 
-    document.addEventListener("click", trackTelegramClick);
-    return () => document.removeEventListener("click", trackTelegramClick);
+    const loadAnalytics = () => {
+      if (GOOGLE_ID) loadScript("google-analytics-script", `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ID}`);
+      if (YANDEX_ID) loadScript("yandex-metrika-script", "https://mc.yandex.ru/metrika/tag.js");
+    };
+
+    const idleId = window.requestIdleCallback
+      ? window.requestIdleCallback(loadAnalytics, { timeout: 2500 })
+      : window.setTimeout(loadAnalytics, 1800);
+
+    const trackClick = (event) => {
+      const target = event.target.closest?.("[data-analytics-event], a[href]");
+      if (!target) return;
+
+      const isTelegram = target.matches('a[href*="t.me/nempl_workshop_kop_bot"]');
+      const eventName = target.dataset.analyticsEvent || (isTelegram ? "telegram_registration_clicked" : "");
+      if (!eventName) return;
+
+      const properties = {
+        method: isTelegram ? "telegram" : undefined,
+        cta_text: target.textContent?.trim().replace(/\s+/g, " ").slice(0, 80),
+        cta_location: target.dataset.analyticsLocation ||
+          target.closest("section")?.id ||
+          target.closest("header, footer")?.tagName.toLowerCase() ||
+          "page",
+        workshop_id: target.dataset.workshopId,
+      };
+
+      trackMarketingEvent(eventName, properties);
+    };
+
+    document.addEventListener("click", trackClick);
+    return () => {
+      document.removeEventListener("click", trackClick);
+      if (window.cancelIdleCallback && typeof idleId === "number") window.cancelIdleCallback(idleId);
+      else window.clearTimeout(idleId);
+    };
   }, []);
 
-  return (
-    <>
-      {GOOGLE_ID && (
-        <>
-          <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ID}`}
-            strategy="afterInteractive"
-          />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              window.gtag = gtag;
-              gtag('js', new Date());
-              gtag('config', '${GOOGLE_ID}');
-            `}
-          </Script>
-        </>
-      )}
-
-      {YANDEX_ID && (
-        <>
-          <Script id="yandex-metrika" strategy="afterInteractive">
-            {`
-              (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-              m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0];k.async=1;k.src=r;
-              a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
-              ym(${Number(YANDEX_ID)}, 'init', {clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true});
-            `}
-          </Script>
-          <noscript>
-            <div>
-              <img
-                src={`https://mc.yandex.ru/watch/${YANDEX_ID}`}
-                style={{ position: "absolute", left: "-9999px" }}
-                alt=""
-              />
-            </div>
-          </noscript>
-        </>
-      )}
-    </>
-  );
+  return null;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 // ID пикселя публичен и в любом случае виден в коде страницы.
@@ -12,31 +12,45 @@ function trackPageView() {
 
 export default function MetaPixel() {
   const pathname = usePathname();
-
-  useEffect(() => {
-    if (!PIXEL_ID || window.fbq) return;
-
-    const fbq = (window.fbq = function (...args) {
-      fbq.callMethod ? fbq.callMethod(...args) : fbq.queue.push(args);
-    });
-    if (!window._fbq) window._fbq = fbq;
-    fbq.push = fbq;
-    fbq.loaded = true;
-    fbq.version = "2.0";
-    fbq.queue = [];
-
-    fbq("init", PIXEL_ID);
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://connect.facebook.net/en_US/fbevents.js";
-    document.head.appendChild(script);
-
-    return () => script.remove();
-  }, []);
+  const lastTrackedPath = useRef(null);
 
   useEffect(() => {
     if (!PIXEL_ID) return;
+
+    if (!window.fbq) {
+      const fbq = (window.fbq = function (...args) {
+        fbq.callMethod ? fbq.callMethod(...args) : fbq.queue.push(args);
+      });
+      if (!window._fbq) window._fbq = fbq;
+      fbq.push = fbq;
+      fbq.loaded = true;
+      fbq.version = "2.0";
+      fbq.queue = [];
+      fbq("init", PIXEL_ID);
+    }
+
+    const loadPixel = () => {
+      if (document.getElementById("meta-pixel-script")) return;
+      const script = document.createElement("script");
+      script.id = "meta-pixel-script";
+      script.async = true;
+      script.src = "https://connect.facebook.net/en_US/fbevents.js";
+      document.head.appendChild(script);
+    };
+
+    const idleId = window.requestIdleCallback
+      ? window.requestIdleCallback(loadPixel, { timeout: 2500 })
+      : window.setTimeout(loadPixel, 1800);
+
+    return () => {
+      if (window.cancelIdleCallback && typeof idleId === "number") window.cancelIdleCallback(idleId);
+      else window.clearTimeout(idleId);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!PIXEL_ID || lastTrackedPath.current === pathname) return;
+    lastTrackedPath.current = pathname;
     trackPageView();
   }, [pathname]);
 

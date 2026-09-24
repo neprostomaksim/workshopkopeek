@@ -124,6 +124,9 @@ export default function Schedule() {
             <a
               className="btn btn-primary"
               href="#register"
+              data-analytics-event="cta_clicked"
+              data-analytics-location="schedule_modal"
+              data-workshop-id={w.id}
               style={{ marginTop: 26, width: "100%" }}
               onClick={() => {
                 window.dispatchEvent(new CustomEvent("workshop:choose", { detail: w.id }));
